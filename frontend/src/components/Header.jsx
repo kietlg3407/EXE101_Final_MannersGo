@@ -21,7 +21,8 @@ const headerStyles = `
   .mg-site-header-inner {
     width: min(100% - 64px, 1320px);
     height: 100%;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     gap: 25px;
     margin: 0 auto;
@@ -40,7 +41,7 @@ const headerStyles = `
     align-items: center;
     justify-content: center;
     gap: clamp(20px, 3vw, 39px);
-    margin: 0 auto;
+    margin: 0;
   }
   .mg-site-nav a {
     height: 100%;
@@ -63,7 +64,7 @@ const headerStyles = `
     border-radius: 4px;
     background: #ff3d75;
   }
-  .mg-site-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 11px; }
+  .mg-site-actions { display: flex; justify-self: end; align-items: center; gap: 11px; }
   .mg-site-search {
     width: 34px;
     height: 36px;
@@ -126,7 +127,7 @@ const headerStyles = `
   }
   @media (max-width: 720px) {
     .mg-site-header { height: 64px; }
-    .mg-site-header-inner { width: calc(100% - 28px); gap: 8px; }
+    .mg-site-header-inner { width: calc(100% - 28px); display: flex; gap: 8px; }
     .mg-site-brand { width: 125px; height: 52px; }
     .mg-site-menu { display: grid; width: 34px; height: 38px; place-items: center; order: 2; margin-left: auto; }
     .mg-site-nav {

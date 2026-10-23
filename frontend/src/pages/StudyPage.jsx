@@ -15,6 +15,9 @@ const topics = [
   { name: 'Quy tắc bàn ăn', icon: Utensils, description: 'Phép lịch sự khi dùng bữa và dự tiệc cùng đồng nghiệp.' },
 ];
 
+const getTopicCardCount = (topicName) => flashcards.filter((card) => card.category === topicName).length;
+const emptyTopicMessage = 'Chủ đề này hiện chưa có thẻ học. Vui lòng chọn chủ đề khác.';
+
 const studyStyles = `
   .mg-study {
     --study-navy: #102e68;
@@ -56,25 +59,31 @@ const studyStyles = `
   .study-progress-track span { height: 100%; display: block; border-radius: inherit; background: linear-gradient(90deg, #ff678d, #ff4778); transition: width .2s ease; }
   .study-card-panel { min-height: 344px; position: relative; padding: 22px 26px 12px; border: 1px solid #f0f1f3; border-radius: 19px; background: #fff; box-shadow: 0 6px 24px #19386b0b; }
   .study-card-counter { position: absolute; z-index: 3; top: 12px; left: 42px; padding: 8px 15px; border-radius: 22px; background: #ffe2e9; color: #fa376d; font-size: 12px; font-weight: 700; }
-  .study-card-stage { height: clamp(175px, 19vw, 218px); position: relative; overflow: hidden; border-radius: 17px; background: #edf5ff; }
-  .study-question-stage { display: grid; align-content: center; justify-items: center; gap: 12px; padding: 24px 60px; background: radial-gradient(circle at top right, #fff2f6, transparent 42%), linear-gradient(135deg, #eef6ff, #fffafa); text-align: center; }
+  .study-card-stage { width: 100%; height: clamp(175px, 19vw, 218px); display: block; position: relative; overflow: hidden; padding: 0; border: 0; border-radius: 17px; background: #edf5ff; color: var(--study-navy); cursor: pointer; perspective: 1000px; appearance: none; }
+  .study-flip-inner { width: 100%; height: 100%; position: relative; display: block; transform-style: preserve-3d; transition: transform .55s cubic-bezier(.2,.7,.2,1); }
+  .study-flip-stage.flipped .study-flip-inner { transform: rotateY(180deg); }
+  .study-flip-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; overflow: auto; padding: 24px 60px; border-radius: inherit; backface-visibility: hidden; -webkit-backface-visibility: hidden; text-align: center; }
+  .study-flip-front { background: radial-gradient(circle at top right, #fff2f6, transparent 42%), linear-gradient(135deg, #eef6ff, #fffafa); }
+  .study-flip-back { background: radial-gradient(circle at bottom left, #edf8ff, transparent 45%), linear-gradient(135deg, #fff3f6, #f7f5ff); transform: rotateY(180deg); }
   .study-question-label, .study-answer-label { color: #f04473; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
-  .study-question-stage p { max-width: 680px; margin: 0; color: #17376b; font-size: clamp(15px, 1.5vw, 19px); font-weight: 800; line-height: 1.55; }
+  .study-flip-text { max-width: 680px; color: #17376b; font-size: clamp(15px, 1.5vw, 19px); font-weight: 800; line-height: 1.55; }
+  .study-flip-hint { display: inline-flex; align-items: center; gap: 6px; margin-top: 3px; color: #7185a5; font-size: 10px; font-weight: 600; }
   .study-card-arrow { width: 38px; height: 38px; position: absolute; z-index: 4; top: 50%; display: grid; place-items: center; border: 1px solid #ff7d9d; border-radius: 50%; background: #fff6f8; color: #ff4779; cursor: pointer; transform: translateY(-50%); transition: background .16s, transform .16s; }
   .study-card-arrow:hover { background: #ffe7ed; transform: translateY(-50%) scale(1.06); }
   .study-card-arrow.prev { left: 7px; }
   .study-card-arrow.next { right: 7px; }
-  .study-card-copy { padding-top: 11px; text-align: center; }
+  .study-card-copy { min-height: 54px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; padding-top: 11px; text-align: center; }
   .study-card-copy h2 { margin: 4px auto 0; color: #102e68; font-size: 15px; font-weight: 800; line-height: 1.55; }
   .study-card-copy p { margin: 0; color: #526c98; font-size: 12px; }
   .study-audio { min-height: 39px; display: flex; align-items: center; gap: 9px; margin: 9px auto 0; padding: 0 16px; border: 1px solid #ffc2d0; border-radius: 22px; background: #fff1f4; color: #ed3767; font-size: 13px; font-weight: 700; cursor: pointer; }
   .study-audio:hover { background: #ffe7ed; }
-  .study-explanation { min-height: 109px; position: relative; display: flex; align-items: flex-start; gap: 11px; overflow: hidden; margin-top: 18px; padding: 15px 18px; border: 1px solid #d7eaff; border-radius: 18px; background: #eff8ff; }
+  .study-explanation { min-height: 109px; display: flex; align-items: flex-start; gap: 11px; margin-top: 18px; padding: 15px 18px; border: 1px solid #d7eaff; border-radius: 18px; background: #eff8ff; }
   .study-explanation-icon { color: #349bf4; }
-  .study-explanation-copy { min-width: 0; max-width: calc(100% - 108px); }
+  .study-explanation-copy { min-width: 0; flex: 1; }
+  .study-explanation-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .study-explanation h3 { margin: 0 0 7px; font-size: 14px; font-weight: 800; }
   .study-explanation p { margin: 0; color: #294975; font-size: 11px; line-height: 1.6; }
-  .study-teacher-frog { width: 90px; height: 92px; position: absolute; right: 8px; bottom: 12px; object-fit: contain; }
+  .study-teacher-frog { width: 72px; height: 68px; flex: 0 0 72px; object-fit: contain; }
   .study-controls { display: grid; grid-template-columns: 1fr 1.25fr; gap: 16px; margin: 26px 48px 0; }
   .study-control { min-height: 45px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #ff6b91; border-radius: 26px; background: #fff; color: #17376b; font-size: 13px; font-weight: 600; cursor: pointer; transition: transform .15s, box-shadow .15s, background .15s; }
   .study-control:hover { transform: translateY(-2px); box-shadow: 0 6px 15px #17376b12; }
@@ -85,7 +94,7 @@ const studyStyles = `
   .study-list-panel { padding: 15px 9px 8px; }
   .study-panel h2 { margin: 0 0 12px; color: #102d68; font-size: 14px; font-weight: 800; }
   .study-progress-content { display: flex; align-items: center; gap: 14px; }
-  .study-donut { width: 96px; height: 96px; flex: 0 0 96px; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(from -10deg, #ff5680 0deg 242deg, #e7eef7 242deg 360deg); }
+  .study-donut { width: 96px; height: 96px; flex: 0 0 96px; display: grid; place-items: center; border-radius: 50%; background: #e7eef7; }
   .study-donut::before { content: ''; width: 77px; height: 77px; grid-area: 1 / 1; border-radius: 50%; background: white; }
   .study-donut-inner { z-index: 1; grid-area: 1 / 1; text-align: center; }
   .study-donut-inner strong { display: block; font: 900 17px/1.15 Nunito, sans-serif; }
@@ -119,9 +128,12 @@ const studyStyles = `
   .study-topic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 15px; }
   .study-topic-option { min-height: 155px; display: grid; grid-template-columns: 48px 1fr; align-content: start; gap: 4px 13px; padding: 20px; border: 1px solid #edf0f5; border-radius: 17px; background: #fffefa; color: var(--study-navy); text-align: left; cursor: pointer; transition: border-color .16s, transform .16s, box-shadow .16s; }
   .study-topic-option:hover { border-color: #ff9cb2; box-shadow: 0 8px 20px #fa376c14; transform: translateY(-2px); }
+  .study-topic-option.empty { border-color: #f1e8eb; background: #fcfafb; }
+  .study-topic-option.empty:hover { border-color: #ff9cb2; }
   .study-topic-option-icon { width: 46px; height: 46px; grid-row: span 2; display: grid; place-items: center; border-radius: 14px; background: #ffe6ec; color: #f23067; }
   .study-topic-option strong { align-self: center; font-size: 15px; }
   .study-topic-option small { grid-column: 2; color: #60789e; font-size: 12px; line-height: 1.55; }
+  .study-topic-notice { margin: -10px 0 20px; padding: 11px 14px; border: 1px solid #ffd3dd; border-radius: 12px; background: #fff4f6; color: #a83254; font-size: 13px; line-height: 1.5; }
   @media (max-width: 1120px) {
     .study-layout { grid-template-columns: 200px minmax(0, 1fr); }
     .study-sidebar { padding-inline: 14px; }
@@ -158,19 +170,19 @@ const studyStyles = `
     .study-card-panel { min-height: 0; padding: 21px 15px 11px; border-radius: 15px; }
     .study-card-counter { top: 10px; left: 24px; padding: 6px 11px; font-size: 10px; }
     .study-card-stage { height: clamp(170px, 55vw, 240px); border-radius: 12px; }
-    .study-question-stage { padding: 22px 40px; }
+    .study-flip-face { gap: 9px; padding: 22px 40px; }
     .study-card-arrow { width: 32px; height: 32px; }
     .study-card-arrow.prev { left: 5px; }
     .study-card-arrow.next { right: 5px; }
-    .study-question-stage p { font-size: 13px; }
-    .study-card-copy h2 { font-size: 12px; }
+    .study-flip-text { font-size: 13px; }
+    .study-flip-hint { font-size: 9px; }
     .study-card-copy p { font-size: 10px; }
     .study-audio { min-height: 35px; font-size: 11px; }
     .study-explanation { min-height: 90px; margin-top: 10px; padding: 12px; }
     .study-explanation h3 { font-size: 12px; }
     .study-explanation p { font-size: 10px; }
-    .study-explanation-copy { max-width: calc(100% - 54px); }
-    .study-teacher-frog { width: 63px; height: 72px; right: 3px; }
+    .study-explanation-heading { gap: 8px; }
+    .study-teacher-frog { width: 58px; height: 56px; flex-basis: 58px; }
     .study-controls { gap: 8px; margin: 13px 12px 0; }
     .study-control { min-height: 40px; gap: 5px; font-size: 10px; }
     .study-right-column { display: grid; grid-template-columns: 1fr; gap: 8px; }
@@ -220,29 +232,65 @@ function Sidebar({ activeSection, onSelectSection }) {
 
 export default function StudyPage() {
   const [activeSection, setActiveSection] = useState(() => (
-    new URLSearchParams(window.location.search).get('view') === 'topics' ? 'topics' : 'study'
+    new URLSearchParams(window.location.search).get('view') === 'topics'
+      || (topics.some(({ name }) => name === new URLSearchParams(window.location.search).get('topic'))
+        && getTopicCardCount(new URLSearchParams(window.location.search).get('topic')) === 0)
+      ? 'topics'
+      : 'study'
   ));
   const [selectedTopic, setSelectedTopic] = useState(() => {
     const requestedTopic = new URLSearchParams(window.location.search).get('topic');
-    return topics.some(({ name }) => name === requestedTopic) ? requestedTopic : 'Danh thiếp';
+    return topics.some(({ name }) => name === requestedTopic) && getTopicCardCount(requestedTopic) > 0
+      ? requestedTopic
+      : topics.find(({ name }) => getTopicCardCount(name) > 0)?.name || '';
+  });
+  const [topicNotice, setTopicNotice] = useState(() => {
+    const requestedTopic = new URLSearchParams(window.location.search).get('topic');
+    return topics.some(({ name }) => name === requestedTopic) && getTopicCardCount(requestedTopic) === 0
+      ? emptyTopicMessage
+      : '';
   });
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const [learnedCardsByTopic, setLearnedCardsByTopic] = useState({});
   const [search, setSearch] = useState('');
   const topicCards = flashcards.filter((card) => card.category === selectedTopic);
   const selectedTopicData = topics.find((topic) => topic.name === selectedTopic);
   const TopicIcon = selectedTopicData?.icon || IdCard;
   const current = topicCards[currentIndex];
-  const progress = Math.round(((currentIndex + 1) / topicCards.length) * 100);
+  const learnedCardIndexes = learnedCardsByTopic[selectedTopic] || [];
+  const learnedCount = learnedCardIndexes.length;
+  const currentCardLearned = learnedCardIndexes.includes(currentIndex);
+  const learningCount = currentCardLearned ? 0 : 1;
+  const newCount = topicCards.length - learnedCount - learningCount;
+  const progress = Math.round((learnedCount / topicCards.length) * 100);
   const matchingCards = topicCards.map((card, index) => ({ title: card.title, index }))
     .filter(({ title }) => title.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')));
 
+  function toggleCardFlip() {
+    if (!isCardFlipped && !currentCardLearned) {
+      setLearnedCardsByTopic((saved) => ({
+        ...saved,
+        [selectedTopic]: [...(saved[selectedTopic] || []), currentIndex],
+      }));
+    }
+    setIsCardFlipped((flipped) => !flipped);
+  }
+
   function goTo(index) {
     setCurrentIndex((index + topicCards.length) % topicCards.length);
+    setIsCardFlipped(false);
   }
 
   function selectTopic(topic) {
+    if (getTopicCardCount(topic) === 0) {
+      setTopicNotice(emptyTopicMessage);
+      return;
+    }
+    setTopicNotice('');
     setSelectedTopic(topic);
     setCurrentIndex(0);
+    setIsCardFlipped(false);
     setSearch('');
     setActiveSection('study');
   }
@@ -275,14 +323,18 @@ export default function StudyPage() {
             <section className="study-topic-chooser">
               <h1>Chủ đề học tập</h1>
               <p>Chọn một chủ đề để bắt đầu ôn luyện cùng MannersGo.</p>
+              {topicNotice && <p className="study-topic-notice" role="alert">{topicNotice}</p>}
               <div className="study-topic-grid">
-                {topics.map(({ name, icon: Icon, description }) => (
-                  <button className="study-topic-option" type="button" key={name} onClick={() => selectTopic(name)}>
+                {topics.map(({ name, icon: Icon, description }) => {
+                  const cardCount = getTopicCardCount(name);
+                  return (
+                  <button className={`study-topic-option${cardCount === 0 ? ' empty' : ''}`} type="button" key={name} onClick={() => selectTopic(name)}>
                     <span className="study-topic-option-icon"><Icon size={24} /></span>
                     <strong>{name}</strong>
-                    <small>{description} {flashcards.filter((card) => card.category === name).length} thẻ</small>
+                    <small>{description} {cardCount} thẻ</small>
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </section>
           </main>
@@ -297,34 +349,51 @@ export default function StudyPage() {
                 <p>{selectedTopicData?.description}</p>
               </div>
               <div className="study-lesson-progress">
-                <span>{currentIndex + 1} / {topicCards.length}</span>
-                <div className="study-progress-track"><span style={{ width: `${progress}%` }} /></div>
+                <span>{learnedCount} / {topicCards.length}</span>
+                <div className="study-progress-track" role="progressbar" aria-label="Tiến độ học chủ đề" aria-valuenow={learnedCount} aria-valuemin={0} aria-valuemax={topicCards.length}><span style={{ width: `${progress}%` }} /></div>
               </div>
             </div>
             <article className="study-card-panel">
               <span className="study-card-counter">Thẻ {currentIndex + 1} / {topicCards.length}</span>
               <button className="study-card-arrow prev" type="button" aria-label="Thẻ trước" onClick={() => goTo(currentIndex - 1)}><ArrowLeft size={21} /></button>
-              <div className="study-card-stage study-question-stage">
-                <span className="study-question-label">Câu hỏi {currentIndex + 1}</span>
-                <p>{current.question}</p>
-              </div>
+              <button
+                aria-label={isCardFlipped ? 'Lật thẻ về câu hỏi' : 'Lật thẻ để xem đáp án'}
+                aria-pressed={isCardFlipped}
+                className={`study-card-stage study-flip-stage${isCardFlipped ? ' flipped' : ''}`}
+                onClick={toggleCardFlip}
+                type="button"
+              >
+                <span className="study-flip-inner">
+                  <span className="study-flip-face study-flip-front">
+                    <span className="study-question-label">Câu hỏi {currentIndex + 1}</span>
+                    <span className="study-flip-text">{current.question}</span>
+                    <span className="study-flip-hint"><RotateCw size={15} /> Nhấn vào thẻ để lật xem đáp án</span>
+                  </span>
+                  <span className="study-flip-face study-flip-back">
+                    <span className="study-answer-label">Đáp án đúng</span>
+                    <span className="study-flip-text">{current.answer}</span>
+                  </span>
+                </span>
+              </button>
               <button className="study-card-arrow next" type="button" aria-label="Thẻ tiếp theo" onClick={() => goTo(currentIndex + 1)}><ArrowRight size={21} /></button>
               <div className="study-card-copy">
-                <span className="study-answer-label">Đáp án đúng</span>
-                <h2>{current.answer}</h2>
-                {current.japanese && <button className="study-audio" type="button" onClick={speakJapanese}><Volume2 size={20} /> Phát âm tiếng Nhật <ChevronRight size={17} /></button>}
+                {isCardFlipped && current.japanese && <button className="study-audio" type="button" onClick={speakJapanese}><Volume2 size={20} /> Phát âm tiếng Nhật <ChevronRight size={17} /></button>}
               </div>
             </article>
-            <section className="study-explanation">
-              <span className="study-explanation-icon"><Lightbulb size={25} /></span>
-              <div className="study-explanation-copy">
-                <h3>Gợi ý</h3>
-                <p>{current.hint}</p>
-                <h3>Giải thích</h3>
-                <p>{current.explanation}</p>
-              </div>
-              <img className="study-teacher-frog" src="/mannersgo/Ếch giáo viên đáng yêu cầm que chỉ dẫn.png" alt="Ếch giáo viên đáng yêu cầm que chỉ dẫn" />
-            </section>
+            {isCardFlipped && (
+              <section className="study-explanation">
+                <span className="study-explanation-icon"><Lightbulb size={25} /></span>
+                <div className="study-explanation-copy">
+                  <div className="study-explanation-heading">
+                    <h3>Gợi ý</h3>
+                    <img className="study-teacher-frog" src="/mannersgo/Ếch giáo viên đáng yêu cầm que chỉ dẫn.png" alt="Ếch giáo viên đáng yêu cầm que chỉ dẫn" />
+                  </div>
+                  <p>{current.hint}</p>
+                  <h3>Giải thích</h3>
+                  <p>{current.explanation}</p>
+                </div>
+              </section>
+            )}
             <div className="study-controls">
               <button className="study-control" type="button" onClick={() => goTo(currentIndex - 1)}><BookOpen size={19} /> Thẻ trước</button>
               <button className="study-control primary" type="button" onClick={() => goTo(currentIndex + 1)}>Thẻ tiếp theo <ArrowRight size={17} /></button>
@@ -335,13 +404,18 @@ export default function StudyPage() {
             <section className="study-panel study-progress-panel">
               <h2>Tiến độ chủ đề</h2>
               <div className="study-progress-content">
-                <div className="study-donut">
-                  <div className="study-donut-inner"><strong>{currentIndex + 1}/{topicCards.length}</strong><small>{progress}%</small></div>
+                <div
+                  aria-label={`Đã học ${learnedCount} trên ${topicCards.length} thẻ`}
+                  className="study-donut"
+                  role="img"
+                  style={{ background: `conic-gradient(from -10deg, #ff5680 0deg ${progress * 3.6}deg, #e7eef7 ${progress * 3.6}deg 360deg)` }}
+                >
+                  <div className="study-donut-inner"><strong>{learnedCount}/{topicCards.length}</strong><small>{progress}%</small></div>
                 </div>
                 <div className="study-status-list">
-                  <div className="study-status done"><Check size={18} /><span>Đã học</span><strong>{currentIndex}</strong></div>
-                  <div className="study-status learning"><Circle size={18} /><span>Đang học</span><strong>1</strong></div>
-                  <div className="study-status new"><Circle size={18} /><span>Chưa học</span><strong>{Math.max(topicCards.length - currentIndex - 1, 0)}</strong></div>
+                  <div className="study-status done"><Check size={18} /><span>Đã học</span><strong>{learnedCount}</strong></div>
+                  <div className="study-status learning"><Circle size={18} /><span>Đang học</span><strong>{learningCount}</strong></div>
+                  <div className="study-status new"><Circle size={18} /><span>Chưa học</span><strong>{newCount}</strong></div>
                 </div>
               </div>
             </section>
@@ -353,7 +427,7 @@ export default function StudyPage() {
                   <button className={`study-list-item${currentIndex === index ? ' active' : ''}`} type="button" key={`${index}-${title}`} onClick={() => goTo(index)}>
                     <span className="study-list-number">{index + 1}</span>
                     <span className="study-list-title">{title}</span>
-                    {index < currentIndex ? <span className="study-list-check"><Check size={14} /></span> : <span />}
+                    {learnedCardIndexes.includes(index) ? <span className="study-list-check"><Check size={14} /></span> : <span />}
                     <ChevronRight className="study-list-arrow" size={17} />
                   </button>
                 ))}

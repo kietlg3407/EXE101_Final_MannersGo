@@ -25,6 +25,18 @@ button, a { -webkit-tap-highlight-color: transparent; }
 button { color: inherit; }
 a { color: inherit; text-decoration: none; }
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #83baff; outline-offset: 2px; }
+.mg-footer { margin-top: 28px; padding: 22px 24px 12px; border-top: 1px solid #f5dce5; background: #fff1f5; }
+.mg-footer-inner { width: min(100%, 1120px); display: grid; grid-template-columns: minmax(180px, .8fr) 2fr; align-items: center; gap: 14px 28px; margin: 0 auto; }
+.mg-footer-intro strong { color: var(--navy); font: 900 20px/1.2 Nunito, 'Be Vietnam Pro', sans-serif; }
+.mg-footer-intro p { max-width: 260px; margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.mg-footer-contacts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.mg-footer-contact { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 9px; border: 1px solid #f2dce5; border-radius: 12px; background: #fffafd; transition: border-color .15s, transform .15s; }
+.mg-footer-contact:hover { transform: translateY(-2px); border-color: #ff9ab5; }
+.mg-footer-icon { width: 30px; height: 30px; flex: 0 0 30px; display: grid; place-items: center; border-radius: 9px; background: #ffe5ed; color: var(--pink); }
+.mg-footer-contact-copy { min-width: 0; display: grid; gap: 3px; }
+.mg-footer-contact-copy small { color: var(--muted); font-size: 9px; }
+.mg-footer-contact-copy strong { overflow-wrap: anywhere; color: var(--navy); font-size: 10px; }
+.mg-footer-bottom { grid-column: 1 / -1; padding-top: 8px; border-top: 1px solid #f1dce4; color: #8292ac; font-size: 9px; text-align: center; }
 .site-header { height: 70px; position: sticky; top: 0; z-index: 20; background: #fffefaed; border-bottom: 1px solid #f0f1ed; backdrop-filter: blur(16px); }
 .header-inner { width: min(100% - 64px, 1320px); height: 100%; margin: auto; display: flex; align-items: center; gap: 26px; }
 .brand { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; }
@@ -275,7 +287,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .site-footer { padding-inline: 25px; }.site-footer nav { gap: 12px; }
 }
 @media (max-width: 720px) {
-  html { scroll-padding-top: 70px; }.site-header { height: 64px; }.header-inner, .page-shell { width: min(100% - 28px, 600px); }.header-inner { gap: 8px; }.brand-mascot { width: 39px; height: 37px; }.brand-copy strong { font-size: 20px; }.brand-copy small { font-size: 7px; }
+  html { scroll-padding-top: 70px; }    .mg-footer { margin-top: 20px; padding: 18px 14px 12px; }
+  .mg-footer-inner { grid-template-columns: 1fr; gap: 14px; }
+  .mg-footer-intro { text-align: center; }
+  .mg-footer-intro p { margin-inline: auto; }
+  .mg-footer-contacts { grid-template-columns: 1fr; }
+  .mg-footer-contact { padding: 8px 10px; }
+  .mg-footer-bottom { grid-column: auto; }
+  .site-header { height: 64px; }.header-inner, .page-shell { width: min(100% - 28px, 600px); }.header-inner { gap: 8px; }.brand-mascot { width: 39px; height: 37px; }.brand-copy strong { font-size: 20px; }.brand-copy small { font-size: 7px; }
   .menu-toggle { display: grid; margin-left: auto; order: 2; }.header-actions { order: 3; }.header-actions .login-link, .header-search { display: none; }.header-actions .button-small { min-height: 34px; padding-inline: 13px; font-size: 10px; }.header-actions .icon-button { padding: 5px; }.main-nav { position: absolute; top: 63px; right: 0; left: 0; display: none; padding: 10px 22px 16px; background: #fff; box-shadow: 0 12px 20px #1f3d5c19; }.main-nav.nav-open { display: grid; }.nav-link { min-height: 43px; border-bottom: 1px solid #f1f2f5; font-size: 13px; }.nav-link.active::after { right: auto; width: 40px; }
   .page-shell { margin-top: 12px; gap: 14px; }.home-hero { display: flex; flex-direction: column; border-radius: 17px; }.hero-copy { padding: 25px 20px 18px; }.hero-copy h1 { margin: 13px 0 9px; font-size: clamp(30px, 8vw, 43px); }.hero-copy > p { font-size: 12px; }.hero-actions { margin-top: 15px; gap: 8px; }.button { min-height: 40px; padding-inline: 15px; font-size: 11px; }.hero-visual { min-height: 255px; margin: 0 10px 10px; border-radius: 35% 35% 14px 14px / 24% 24% 14px 14px; }.hero-frog { left: 22%; width: 55%; height: 207px; }.hero-badge { top: 16px; }.fuji { right: 17%; transform: scale(.82); transform-origin: top right; }.torii { transform: scale(.76); transform-origin: bottom right; }.mascot-rays { top: 90px; }
   .benefit-row { grid-template-columns: 1fr; gap: 8px; }.benefit-card { min-height: 85px; padding: 13px 16px; }.benefit-icon { flex-basis: 48px; width: 48px; height: 48px; }.benefit-card h2 { font-size: 15px; }.benefit-card p { font-size: 11px; }
