@@ -5,7 +5,9 @@ import {
 } from 'lucide-react';
 import Header from '../components/Header.jsx';
 
-const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const apiBaseUrl = import.meta.env.PROD
+  ? ''
+  : (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 const profileStyles = `
   .mg-profile { min-height: 100vh; padding: 24px; background: linear-gradient(180deg, #f0f8ff, #fffefa 360px); color: #102b68; }

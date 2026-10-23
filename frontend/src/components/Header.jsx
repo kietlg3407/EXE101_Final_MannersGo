@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronDown, Menu, Search, X } from 'lucide-react';
 
-const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const apiBaseUrl = import.meta.env.PROD
+  ? ''
+  : (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 const headerStyles = `
   .mg-site-header {

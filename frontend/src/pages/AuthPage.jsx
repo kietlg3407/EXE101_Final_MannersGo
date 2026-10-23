@@ -4,7 +4,9 @@ import {
   ArrowLeft, ArrowRight, Eye, EyeOff, LockKeyhole, Mail, UserRound,
 } from 'lucide-react';
 
-const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const apiBaseUrl = import.meta.env.PROD
+  ? ''
+  : (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
