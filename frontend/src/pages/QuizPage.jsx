@@ -369,7 +369,7 @@ export default function QuizPage() {
               <div className="quiz-tip-heading"><span className="quiz-tip-bulb"><Lightbulb size={25} fill="currentColor" /></span>Mẹo nhỏ từ MannersGo</div>
               <p className="quiz-tip-speech">{current.hint}</p>
               <span className="quiz-spark" aria-hidden="true">✦</span>
-              <img className="quiz-tip-mascot" src="/mannersgo/frog-good.png" alt="Ếch MannersGo chia sẻ mẹo học" />
+              <img className="quiz-tip-mascot" src="/mannersgo/Ếch doanh nhân chỉ tay vui vẻ.png" alt="Ếch doanh nhân chỉ tay vui vẻ" />
             </section>
           </aside>
         </main>

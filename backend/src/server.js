@@ -6,12 +6,29 @@ import preorderRouter from './routes/preorders.js';
 import contactRouter from './routes/contact.js';
 import scenarioRouter from './routes/scenarios.js';
 import questionRouter from './routes/questions.js';
+import authRouter from './routes/auth.js';
 
 const app = express();
 const port = Number(process.env.PORT) || 5000;
+const configuredOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? configuredOrigins
+  : [...new Set(configuredOrigins.flatMap((origin) => {
+    if (origin.startsWith('http://localhost:')) {
+      return [origin, origin.replace('http://localhost:', 'http://127.0.0.1:')];
+    }
+    if (origin.startsWith('http://127.0.0.1:')) {
+      return [origin, origin.replace('http://127.0.0.1:', 'http://localhost:')];
+    }
+    return [origin];
+  }))];
 
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN?.split(',').map((origin) => origin.trim()) ?? 'http://localhost:5173',
+  origin: allowedOrigins,
+  credentials: true,
 }));
 app.use(express.json({ limit: '10kb' }));
 
@@ -26,6 +43,7 @@ app.use('/api/preorders', preorderRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/scenarios', scenarioRouter);
 app.use('/api/questions', questionRouter);
+app.use('/api/auth', authRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: `Không tìm thấy endpoint ${req.method} ${req.path}.` });
@@ -37,20 +55,30 @@ app.use((error, _req, res, _next) => {
 });
 
 async function start() {
-  if (process.env.MONGODB_URI) {
-    try {
-      await mongoose.connect(process.env.MONGODB_URI);
-      console.info('Connected to MongoDB Atlas.');
-    } catch (error) {
-      console.error('Could not connect to MongoDB:', error.message);
+  if (process.env.NODE_ENV === 'production') {
+    const missing = ['MONGODB_URI', 'AUTH_TOKEN_SECRET', 'CLIENT_ORIGIN']
+      .filter((name) => !process.env[name]);
+    if (missing.length) {
+      throw new Error(`Missing required production environment variables: ${missing.join(', ')}`);
     }
-  } else {
+    if (process.env.AUTH_TOKEN_SECRET.length < 32) {
+      throw new Error('AUTH_TOKEN_SECRET must contain at least 32 characters.');
+    }
+  }
+
+  if (!process.env.MONGODB_URI) {
     console.warn('MONGODB_URI is not set. Registration requests will be unavailable.');
+  } else {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.info('Connected to MongoDB Atlas.');
   }
 
   app.listen(port, () => {
-    console.info(`MannersGo API listening on http://localhost:${port}`);
+    console.info(`MannersGo API listening on port ${port}`);
   });
 }
 
-start();
+start().catch((error) => {
+  console.error('Could not start MannersGo API:', error.message);
+  process.exitCode = 1;
+});

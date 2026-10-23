@@ -367,19 +367,26 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .auth-screen .auth-submit { min-height: 54px; gap: 10px; border: 0; font-size: 15px; }
 .auth-screen .auth-message { margin: 11px 0; }
 .auth-screen .auth-message-error { background: #fff0f1; color: #a62f4e; }
+.auth-screen .auth-message-success { background: #effaf4; color: #246d4a; }
 .auth-screen .auth-divider { margin: 24px 0 16px; font-size: 11px; white-space: nowrap; }
-.auth-screen .social-buttons { gap: 10px; }
-.auth-screen .social-buttons button {
+.auth-google-mount { width: 100%; min-height: 44px; display: grid; justify-items: center; }
+.auth-google-mount iframe { max-width: 100%; }
+.auth-google-unconfigured {
+  width: 100%;
   min-height: 48px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
+  border: 1px solid #dce7f5;
   border-radius: 12px;
+  background: white;
+  color: var(--navy);
   font-size: 11px;
+  cursor: not-allowed;
 }
+.auth-google-status { margin: 9px 0 0; color: #7b6580; font-size: 10px; line-height: 1.5; text-align: center; }
 .social-google { color: #4285f4; font-size: 19px; font-weight: 900; }
-.social-facebook { width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: #1877f2; color: #fff; font: 800 16px Arial, sans-serif; }
 @media (max-width: 720px) {
   .auth-screen { padding: 10px; }
   .auth-screen .auth-page { min-height: 0; grid-template-columns: 1fr; border-radius: 20px; }
@@ -397,7 +404,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .auth-home-link svg { width: 14px; height: 14px; }
   .auth-switch-options { gap: 8px; font-size: 10px; }
   .auth-screen .auth-switch .button { min-width: 105px; }
-  .auth-screen .social-buttons { gap: 6px; }
-  .auth-screen .social-buttons button { gap: 5px; font-size: 10px; }
+  .auth-google-unconfigured { gap: 5px; font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }

@@ -71,10 +71,10 @@ const studyStyles = `
   .study-audio:hover { background: #ffe7ed; }
   .study-explanation { min-height: 109px; position: relative; display: flex; align-items: flex-start; gap: 11px; overflow: hidden; margin-top: 18px; padding: 15px 18px; border: 1px solid #d7eaff; border-radius: 18px; background: #eff8ff; }
   .study-explanation-icon { color: #349bf4; }
-  .study-explanation-copy { max-width: calc(100% - 84px); }
+  .study-explanation-copy { min-width: 0; max-width: calc(100% - 108px); }
   .study-explanation h3 { margin: 0 0 7px; font-size: 14px; font-weight: 800; }
   .study-explanation p { margin: 0; color: #294975; font-size: 11px; line-height: 1.6; }
-  .study-teacher-frog { width: 90px; height: 92px; position: absolute; right: 8px; bottom: 0; object-fit: contain; }
+  .study-teacher-frog { width: 90px; height: 92px; position: absolute; right: 8px; bottom: 12px; object-fit: contain; }
   .study-controls { display: grid; grid-template-columns: 1fr 1.25fr; gap: 16px; margin: 26px 48px 0; }
   .study-control { min-height: 45px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #ff6b91; border-radius: 26px; background: #fff; color: #17376b; font-size: 13px; font-weight: 600; cursor: pointer; transition: transform .15s, box-shadow .15s, background .15s; }
   .study-control:hover { transform: translateY(-2px); box-shadow: 0 6px 15px #17376b12; }
@@ -212,7 +212,7 @@ function Sidebar({ activeSection, onSelectSection }) {
         <span className="study-promo-blossom top">✿</span>
         <span className="study-promo-blossom bottom">✿</span>
         <div className="study-speech">Cùng học<br />mỗi ngày nhé!</div>
-        <img className="study-sidebar-frog" src="/mannersgo/frog-good.png" alt="Ếch MannersGo cổ vũ bạn học" />
+        <img className="study-sidebar-frog" src="/mannersgo/Kawaii%20Frog%20Reading%20a%20Book.png" alt="Ếch MannersGo đọc sách" />
       </div>
     </aside>
   );
@@ -323,7 +323,7 @@ export default function StudyPage() {
                 <h3>Giải thích</h3>
                 <p>{current.explanation}</p>
               </div>
-              <img className="study-teacher-frog" src="/mannersgo/frog-good.png" alt="" />
+              <img className="study-teacher-frog" src="/mannersgo/Ếch giáo viên đáng yêu cầm que chỉ dẫn.png" alt="Ếch giáo viên đáng yêu cầm que chỉ dẫn" />
             </section>
             <div className="study-controls">
               <button className="study-control" type="button" onClick={() => goTo(currentIndex - 1)}><BookOpen size={19} /> Thẻ trước</button>
