@@ -20,7 +20,7 @@ const quizStyles = `
   .mg-quiz a { color: inherit; text-decoration: none; }
   .mg-quiz button { font: inherit; color: inherit; }
   .quiz-shell { width: min(100% - 54px, 1360px); margin: 17px auto 0; }
-  .quiz-main-grid { display: grid; grid-template-columns: minmax(0, 1fr) 263px; gap: 17px; margin-top: 17px; }
+  .quiz-main-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 300px); gap: 17px; margin-top: 17px; }
   .quiz-question-card { min-width: 0; padding: 17px 18px 18px; border-radius: 22px; background: white; box-shadow: 0 5px 20px #18426d06; }
   .quiz-label-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
   .quiz-count-label, .quiz-category-label { min-height: 34px; display: inline-flex; align-items: center; gap: 8px; padding: 0 17px; border-radius: 20px; background: #cfe7ff; color: #16427d; font-size: 12px; font-weight: 700; }
@@ -64,7 +64,7 @@ const quizStyles = `
   .quiz-question-grid button.answered { border-color: #d8f0e4; background: #e7f7ef; color: #318b69; }
   .quiz-question-grid button.answered.current { border-color: var(--quiz-pink); background: var(--quiz-pink); color: #fff; }
   .quiz-grid-check { position: absolute; top: 5px; right: 5px; }
-  .quiz-tip-panel { min-height: 234px; position: relative; overflow: hidden; padding: 18px 15px 0; border-radius: 21px; background: linear-gradient(145deg, #fff0f4, #fff8f8); }
+  .quiz-tip-panel { min-height: 258px; position: relative; overflow: hidden; padding: 18px 15px 0; border-radius: 21px; background: linear-gradient(145deg, #fff0f4, #fff8f8); }
   .quiz-tip-heading { display: flex; align-items: center; gap: 9px; color: var(--quiz-pink); font: 900 15px Nunito, 'Be Vietnam Pro', sans-serif; white-space: nowrap; }
   .quiz-tip-bulb { width: 45px; height: 45px; flex: 0 0 45px; display: grid; place-items: center; border-radius: 50%; background: #ffe1e9; color: var(--quiz-pink); }
   .quiz-tip-speech { width: 83%; min-height: 89px; position: relative; z-index: 1; display: grid; place-items: center; margin: 13px auto 0; padding: 12px 19px; border: 1.5px solid #8ca9d3; border-radius: 50%; background: #fff; color: #284779; font-size: 11px; font-weight: 600; line-height: 1.55; text-align: center; transform: rotate(-5deg); }
@@ -97,7 +97,7 @@ const quizStyles = `
   .quiz-result-panel p { margin: 0 auto 19px; color: #516b94; }
   @media (max-width: 1050px) {
     .quiz-shell { width: min(100% - 36px, 990px); }
-    .quiz-main-grid { grid-template-columns: minmax(0,1fr) 235px; gap: 12px; }
+    .quiz-main-grid { grid-template-columns: minmax(0,1fr) 250px; gap: 12px; }
     .quiz-question-card { padding-inline: 14px; }
     .quiz-question-content { gap: 14px; }
     .quiz-question-actions { gap: 6px; }
@@ -127,7 +127,7 @@ const quizStyles = `
     .quiz-question-actions { margin-top: 12px; }
     .quiz-action { min-height: 39px; padding-inline: 11px; font-size: 10px; }
     .quiz-action.primary { min-width: 0; }
-    .quiz-aside { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 9px; }
+    .quiz-aside { grid-template-columns: minmax(0,1fr); gap: 9px; }
     .quiz-progress-panel { min-height: 0; padding: 13px 10px; border-radius: 15px; }
     .quiz-progress-panel h2 { margin-bottom: 9px; font-size: 13px; }
     .quiz-progress-bar { height: 10px; margin-right: 38px; }
@@ -135,11 +135,11 @@ const quizStyles = `
     .quiz-question-grid { gap: 5px; margin-top: 12px; }
     .quiz-question-grid button { border-radius: 8px; font-size: 10px; }
     .quiz-grid-check { top: 2px; right: 2px; width: 11px; }
-    .quiz-tip-panel { min-height: 185px; padding: 11px 9px 0; border-radius: 15px; }
+    .quiz-tip-panel { min-height: 230px; padding: 11px 12px 0; border-radius: 15px; }
     .quiz-tip-heading { gap: 5px; font-size: 11px; }
     .quiz-tip-bulb { width: 32px; height: 32px; flex-basis: 32px; }
     .quiz-tip-bulb svg { width: 19px; }
-    .quiz-tip-speech { width: 92%; min-height: 65px; margin-top: 9px; padding: 7px 11px; font-size: 9px; }
+    .quiz-tip-speech { width: calc(100% - 42px); min-height: 80px; margin: 9px auto 0 0; padding: 8px 12px; font-size: 10px; }
     .quiz-tip-mascot { width: 102px; height: 102px; right: 0; bottom: -26px; }
     .quiz-spark { right: 16px; bottom: 58px; font-size: 18px; }
     .quiz-topics-panel { margin-top: 10px; padding: 11px; border-radius: 16px; }
@@ -155,7 +155,7 @@ const quizStyles = `
   @media (max-width: 380px) {
     .quiz-shell { width: calc(100% - 16px); }
     .quiz-aside { grid-template-columns: 1fr; }
-    .quiz-tip-panel { min-height: 180px; }
+    .quiz-tip-panel { min-height: 230px; }
   }
 `;
 
@@ -254,7 +254,8 @@ export default function QuizPage() {
   const [finished, setFinished] = useState(false);
   const questions = quizQuestions;
   const current = questions[currentIndex];
-  const progress = Math.round(((currentIndex + 1) / questions.length) * 100);
+  const answeredCount = Object.keys(answers).length;
+  const progress = Math.round((answeredCount / questions.length) * 100);
   const score = Object.entries(answers).reduce((total, [index, selected]) => (
     total + (questions[Number(index)].correct === selected ? 1 : 0)
   ), 0);
@@ -355,7 +356,7 @@ export default function QuizPage() {
             <section className="quiz-progress-panel">
               <h2>Tiến độ làm bài</h2>
               <div className="quiz-progress-bar"><span style={{ width: `${progress}%` }} /></div>
-              <strong className="quiz-progress-count">{currentIndex + 1}/{questions.length}</strong>
+              <strong className="quiz-progress-count">{answeredCount}/{questions.length}</strong>
               <div className="quiz-question-grid">
                 {questions.map((_, index) => (
                   <button className={`${index === currentIndex ? 'current' : ''}${answers[index] !== undefined ? ' answered' : ''}`} type="button" key={index} aria-label={`Đi đến câu ${index + 1}`} aria-current={index === currentIndex ? 'step' : undefined} onClick={() => goToQuestion(index)}>

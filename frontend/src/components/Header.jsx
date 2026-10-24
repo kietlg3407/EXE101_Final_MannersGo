@@ -164,7 +164,7 @@ const navItems = [
   { label: 'Trang chủ', href: '/', id: 'home' },
   { label: 'Học thẻ', href: '/flashcards', id: 'flashcards' },
   { label: 'Làm quiz', href: '/quiz/office-basics', id: 'quiz' },
-  { label: 'Blog', href: '/#topics', id: 'blog' },
+  { label: 'Blog', href: '/blog', id: 'blog' },
   { label: 'Về dự án', href: '/about', id: 'about' },
 ];
 

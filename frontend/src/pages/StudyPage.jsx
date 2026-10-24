@@ -258,6 +258,8 @@ export default function StudyPage() {
   const selectedTopicData = topics.find((topic) => topic.name === selectedTopic);
   const TopicIcon = selectedTopicData?.icon || IdCard;
   const current = topicCards[currentIndex];
+  const questionJapanese = current?.question.split(' (')[0];
+  const hasJapaneseQuestion = /[\u3040-\u30ff\u3400-\u9fff]/.test(questionJapanese || '');
   const learnedCardIndexes = learnedCardsByTopic[selectedTopic] || [];
   const learnedCount = learnedCardIndexes.length;
   const currentCardLearned = learnedCardIndexes.includes(currentIndex);
@@ -295,13 +297,13 @@ export default function StudyPage() {
     setActiveSection('study');
   }
 
-  function speakJapanese() {
+  function speakJapanese(text) {
     if (!('speechSynthesis' in window)) {
       window.alert('Trình duyệt này chưa hỗ trợ phát âm thanh.');
       return;
     }
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(current.japanese);
+    const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ja-JP';
     window.speechSynthesis.speak(utterance);
   }
@@ -377,7 +379,16 @@ export default function StudyPage() {
               </button>
               <button className="study-card-arrow next" type="button" aria-label="Thẻ tiếp theo" onClick={() => goTo(currentIndex + 1)}><ArrowRight size={21} /></button>
               <div className="study-card-copy">
-                {isCardFlipped && current.japanese && <button className="study-audio" type="button" onClick={speakJapanese}><Volume2 size={20} /> Phát âm tiếng Nhật <ChevronRight size={17} /></button>}
+                {!isCardFlipped && hasJapaneseQuestion && (
+                  <button className="study-audio" type="button" onClick={() => speakJapanese(questionJapanese)}>
+                    <Volume2 size={20} /> Phát âm câu hỏi tiếng Nhật <ChevronRight size={17} />
+                  </button>
+                )}
+                {isCardFlipped && current.japanese && (
+                  <button className="study-audio" type="button" onClick={() => speakJapanese(current.japanese)}>
+                    <Volume2 size={20} /> Phát âm tiếng Nhật <ChevronRight size={17} />
+                  </button>
+                )}
               </div>
             </article>
             {isCardFlipped && (
