@@ -6,6 +6,7 @@ const flashcards = quizQuestions.map((question, index) => {
 
   return {
     id: `flashcard-${index + 1}`,
+    explanationId: question.explanationId,
     category: question.studyTopic,
     title: question.question,
     question: question.question,

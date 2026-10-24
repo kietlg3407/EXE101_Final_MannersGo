@@ -1,5 +1,6 @@
 const quizQuestions = [
   {
+    explanationId: 'elevator-seat',
     category: 'Văn hoá công sở',
     studyTopic: 'Trong cuộc họp',
     question: '上司やお客様と一緒にエレベーターに乗るとき、どこに立つのが適切ですか。 (Khi đi thang máy cùng cấp trên hoặc khách hàng, bạn nên đứng ở vị trí nào?)',
@@ -14,6 +15,7 @@ const quizQuestions = [
     explanation: '操作盤の前は下座（しもざ）です。ボタンを押してドアを押さえ、お客様や上司を案内します。 (Vị trí trước bảng điều khiển là hạ tọa. Người đứng ở đó chủ động giữ cửa, bấm tầng và mời cấp trên hoặc khách ra vào an toàn.)',
   },
   {
+    explanationId: 'aizuchi',
     category: 'Chào hỏi & Giao tiếp',
     studyTopic: 'Chào hỏi và giao tiếp',
     question: '上司の説明を理解したとき、失礼にあたる相づちはどれですか。 (Khi đã hiểu lời giải thích của cấp trên, từ đệm nào có thể bị xem là thất lễ?)',
@@ -28,6 +30,7 @@ const quizQuestions = [
     explanation: '「なるほど」は、目上の人に使うと評価しているように聞こえることがあります。「はい」や「かしこまりました」を使いましょう。 (「なるほど」 có thể mang sắc thái nhận xét từ trên xuống. Với cấp trên, hãy dùng 「はい」 hoặc 「かしこまりました」.)',
   },
   {
+    explanationId: 'uchi-soto',
     category: 'Giao tiếp khách hàng',
     studyTopic: 'Chào hỏi và giao tiếp',
     question: 'お客様から田中課長への取次ぎを頼まれましたが、課長は席を外しています。自社の上司について、どのように伝えるのが適切ですか。 (Khách hỏi gặp Trưởng phòng Tanaka nhưng sếp đang vắng mặt. Khi nói với khách về sếp của công ty mình, cách gọi nào phù hợp?)',
@@ -42,6 +45,7 @@ const quizQuestions = [
     explanation: '社外の人に対しては、自社の人を身内として扱います。そのため、役職は名前の前に置き、名前の後ろに敬称を付けません。 (Theo nguyên tắc Uchi-Soto, khi giao tiếp với người ngoài công ty, nhân viên công ty mình được xem là “người nhà”; không gắn hậu tố kính ngữ sau tên.)',
   },
   {
+    explanationId: 'business-card-exchange',
     category: 'Danh thiếp',
     studyTopic: 'Danh thiếp',
     question: '取引先と同時に名刺を交換するとき、正しい渡し方と受け取り方はどれですか。 (Khi cùng đối tác trao đổi danh thiếp, thao tác đưa và nhận nào đúng lễ nghi Nhật Bản?)',
@@ -56,6 +60,7 @@ const quizQuestions = [
     explanation: '自分の名刺は右手で渡し、相手の名刺は左手で受け取ります。受け取ったらすぐに右手を添え、両手で持ちます。 (Trao danh thiếp bằng tay phải và nhận bằng tay trái; ngay sau đó dùng cả hai tay đỡ danh thiếp.)',
   },
   {
+    explanationId: 'soudan',
     category: 'Trao đổi công việc',
     studyTopic: 'Trong cuộc họp',
     question: '仕事で問題が起き、上司に相談するとき、避けるべき態度はどれですか。 (Khi công việc phát sinh sự cố và cần xin ý kiến sếp, thái độ nào sau đây không phù hợp?)',
@@ -70,6 +75,7 @@ const quizQuestions = [
     explanation: '相談するときは、問題を説明し、自分で考えた案を伝えてから意見を求めます。何も考えずに「どうしましょう」と聞くと、上司に考える責任を任せてしまいます。 (Khi xin ý kiến, hãy trình bày vấn đề và phương án đã cân nhắc; hỏi “Bây giờ phải làm sao?” mà chưa suy nghĩ sẽ đẩy toàn bộ trách nhiệm giải quyết sang cho sếp.)',
   },
   {
+    explanationId: 'identify-sato',
     category: 'Điện thoại công việc',
     studyTopic: 'Email và công việc',
     question: '電話の相手が「佐藤です」と名乗りましたが、同じ名字の取引先が複数います。失礼にならずに所属先を確認するには、どう尋ねますか。 (Khách gọi đến chỉ giới thiệu họ Sato, trong khi có nhiều đối tác cùng họ. Bạn nên hỏi thế nào để xác nhận đơn vị mà vẫn lịch sự?)',
@@ -84,6 +90,7 @@ const quizQuestions = [
     explanation: '「恐れ入りますが、どちらの佐藤様でいらっしゃいますでしょうか」と尋ねると、相手に失礼なく所属先を確認できます。 (Có thể hỏi “Xin thứ lỗi, anh/chị Sato thuộc đơn vị nào ạ?” để xác nhận thông tin mà không tạo cảm giác bị tra hỏi.)',
   },
   {
+    explanationId: 'caller-on-hold',
     category: 'Điện thoại công việc',
     studyTopic: 'Email và công việc',
     question: '担当者の吉田さんが別の電話に出ています。相手が困っている様子のとき、どのように対応しますか。 (Khách tìm anh Yoshida nhưng anh ấy đang nghe cuộc gọi khác. Khách có vẻ phân vân, bạn nên xử lý thế nào?)',
@@ -98,6 +105,7 @@ const quizQuestions = [
     explanation: '「あいにく吉田は別の電話に出ております。少々お待ちいただけますでしょうか」と伝えます。 (Có thể nói “Rất tiếc, anh Yoshida đang nghe cuộc điện thoại khác. Anh/chị có thể vui lòng chờ một chút không ạ?” để khách tự quyết định.)',
   },
   {
+    explanationId: 'take-a-message',
     category: 'Điện thoại công việc',
     studyTopic: 'Email và công việc',
     question: '担当者が別の電話中だと伝えると、相手が困っています。伝言を申し出るには、どう言えばよいですか。 (Sau khi biết anh Yoshida đang bận điện thoại, khách lúng túng. Bạn nên mở lời thế nào để đề nghị nhận lời nhắn?)',
@@ -112,6 +120,7 @@ const quizQuestions = [
     explanation: '「私でよければお伺いしますが」と謙虚に申し出て、「何か申し伝えましょうか」と伝言を確認します。 (Mở lời khiêm nhường “Nếu tôi có thể giúp được…” rồi hỏi khách có muốn nhắn lại không.)',
   },
   {
+    explanationId: 'ask-to-speak-slowly',
     category: 'Điện thoại công việc',
     studyTopic: 'Email và công việc',
     question: '相手が早口で話し、メモが追いつきません。相手に失礼のないように、ゆっくり話してもらう表現はどれですか。 (Đối tác nói nhanh khiến bạn ghi chép không kịp. Cách diễn đạt nào phù hợp để nhờ họ nói chậm lại mà không thất lễ?)',
@@ -126,6 +135,7 @@ const quizQuestions = [
     explanation: '「恐れ入りますが、もう少しゆっくりお願いできますでしょうか」と言えば、相手を責めずに話す速度を調整してもらえます。 (Câu này giúp bạn nhờ đối tác nói chậm hơn mà không chỉ trích cách nói của họ.)',
   },
   {
+    explanationId: 'phone-closing',
     category: 'Điện thoại công việc',
     studyTopic: 'Email và công việc',
     question: '電話を切る前に「失礼いたします」と言うとき、プロらしい話し方はどれですか。 (Trước khi cúp máy, cách nói câu chào kết thúc nào tạo ấn tượng chuyên nghiệp?)',

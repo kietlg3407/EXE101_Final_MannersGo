@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   ArrowLeft, ArrowRight, Check, CheckCircle2, ChevronRight, Grid2X2, X,
   IdCard, Lightbulb, Mail, MessageCircle, UsersRound, Utensils,
@@ -48,6 +49,8 @@ const quizStyles = `
   .quiz-answer-feedback.incorrect .quiz-feedback-title { color: #d34267; }
   .quiz-answer-feedback p { margin: 0; font-size: 11px; line-height: 1.6; }
   .quiz-feedback-correct { margin-top: 6px !important; font-weight: 700; }
+  .quiz-explanation-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 9px; color: #ed3c70 !important; font-size: 11px; font-weight: 800; }
+  .quiz-explanation-link:hover { text-decoration: underline !important; }
   .quiz-question-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 19px; }
   .quiz-action { min-height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 19px; border: 1px solid #d7e7f8; border-radius: 26px; background: white; color: #17396f; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
   .quiz-action:hover { border-color: #90b9eb; }
@@ -337,6 +340,11 @@ export default function QuizPage() {
                           <p className="quiz-feedback-correct">
                             Đáp án đúng: {String.fromCharCode(65 + current.correct)}. {current.answers[current.correct]}
                           </p>
+                        )}
+                        {current.explanationId && (
+                          <Link className="quiz-explanation-link" to={`/explanations/${current.explanationId}`}>
+                            Đi đến lời giải chi tiết <ChevronRight size={15} />
+                          </Link>
                         )}
                       </div>
                     )}
