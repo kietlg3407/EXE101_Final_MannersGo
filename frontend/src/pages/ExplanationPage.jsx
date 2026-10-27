@@ -102,8 +102,8 @@ export default function ExplanationPage() {
               {detail.answerAnalysis.map(({ option, result, detail: analysis }) => (
                 <article className={`explanation-answer-item${option === detail.correctAnswer ? ' correct' : ''}`} key={option}>
                   <div className="explanation-answer-title">
-                    {option === detail.correctAnswer ? <CheckCircle2 size={17} /> : <span>{option}</span>}
-                    {option === detail.correctAnswer ? `${option} · ${result}` : `${option} · ${result}`}
+                    {option === detail.correctAnswer && <CheckCircle2 size={17} />}
+                    {option} · {result}
                   </div>
                   <p>{analysis}</p>
                 </article>
