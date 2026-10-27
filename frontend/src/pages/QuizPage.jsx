@@ -25,11 +25,11 @@ const quizStyles = `
   .quiz-count-label, .quiz-category-label { min-height: 34px; display: inline-flex; align-items: center; gap: 8px; padding: 0 17px; border-radius: 20px; background: #cfe7ff; color: #16427d; font-size: 12px; font-weight: 700; }
   .quiz-label-divider { width: 1px; height: 27px; background: #dbe8f4; }
   .quiz-category-label { padding-inline: 15px; background: #ffe8ef; color: #f73870; font-size: 13px; }
-  .quiz-question-content { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); align-items: center; gap: 23px; }
+  .quiz-question-prompt { margin: 0 0 18px; color: #102d68; font: 900 clamp(18px, 1.8vw, 22px)/1.3 Nunito, 'Be Vietnam Pro', sans-serif; letter-spacing: -.35px; }
+  .quiz-question-content { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); align-items: start; gap: 23px; }
   .quiz-scene { width: 100%; height: clamp(270px, 34vw, 385px); overflow: hidden; border-radius: 17px; background: #d9edff; }
   .quiz-scene svg { width: 100%; height: 100%; display: block; }
   .quiz-answer-panel { min-width: 0; }
-  .quiz-answer-panel h1 { margin: 0 0 16px; color: #102d68; font: 900 clamp(18px, 1.8vw, 22px)/1.3 Nunito, 'Be Vietnam Pro', sans-serif; letter-spacing: -.35px; }
   .quiz-answer-list { display: grid; gap: 9px; }
   .quiz-answer { min-height: 46px; display: flex; align-items: center; gap: 11px; padding: 5px 10px; border: 1px solid #d8e8f9; border-radius: 13px; background: white; color: #223f70; text-align: left; font-size: 12px; line-height: 1.4; cursor: pointer; transition: border-color .15s, background .15s, transform .15s; }
   .quiz-answer:hover { border-color: #86c3ff; transform: translateY(-1px); }
@@ -45,7 +45,7 @@ const quizStyles = `
   .quiz-answer-feedback.incorrect { border-color: #ffd3dd; background: #fff4f6; color: #734455; }
   .quiz-feedback-title { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; color: #258455; font-size: 13px; font-weight: 800; }
   .quiz-answer-feedback.incorrect .quiz-feedback-title { color: #d34267; }
-  .quiz-answer-feedback p { margin: 0; font-size: 11px; line-height: 1.6; }
+  .quiz-answer-feedback p { margin: 0; font-size: 11px; line-height: 1.6; white-space: pre-line; }
   .quiz-feedback-correct { margin-top: 6px !important; font-weight: 700; }
   .quiz-explanation-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 9px; color: #ed3c70 !important; font-size: 11px; font-weight: 800; }
   .quiz-explanation-link:hover { text-decoration: underline !important; }
@@ -100,7 +100,9 @@ const quizStyles = `
     .quiz-shell { width: min(100% - 36px, 990px); }
     .quiz-main-grid { grid-template-columns: minmax(0,1fr) 250px; gap: 12px; }
     .quiz-question-card { padding-inline: 14px; }
+    .quiz-question-prompt { margin-bottom: 14px; }
     .quiz-question-content { gap: 14px; }
+    .quiz-scene { height: clamp(270px, 32vw, 340px); }
     .quiz-question-actions { gap: 6px; }
     .quiz-action { padding-inline: 12px; }
     .quiz-action.primary { min-width: 130px; }
@@ -119,9 +121,9 @@ const quizStyles = `
     .quiz-label-row { gap: 7px; margin-bottom: 10px; }
     .quiz-count-label, .quiz-category-label { min-height: 29px; gap: 5px; padding-inline: 10px; font-size: 10px; }
     .quiz-category-label { font-size: 10px; }
+    .quiz-question-prompt { margin-bottom: 10px; font-size: 17px; }
     .quiz-question-content { grid-template-columns: minmax(0,1fr); gap: 12px; }
     .quiz-scene { height: clamp(190px, 56vw, 300px); border-radius: 12px; }
-    .quiz-answer-panel h1 { margin-bottom: 10px; font-size: 17px; }
     .quiz-answer-list { gap: 7px; }
     .quiz-answer { min-height: 42px; gap: 8px; padding: 4px 8px; border-radius: 11px; font-size: 10px; }
     .quiz-answer-letter { width: 32px; height: 32px; flex-basis: 32px; font-size: 14px; }
@@ -299,10 +301,10 @@ export default function QuizPage() {
                   <span className="quiz-label-divider" />
                   <span className="quiz-category-label"><Grid2X2 size={17} fill="currentColor" /> {current.category}</span>
                 </div>
+                <h1 className="quiz-question-prompt">{current.question}</h1>
                 <div className="quiz-question-content">
                   <MeetingScene />
                   <section className="quiz-answer-panel">
-                    <h1>{current.question}</h1>
                     <div className="quiz-answer-list">
                       {current.answers.map((answer, index) => {
                         const selected = answers[currentIndex] === index;
