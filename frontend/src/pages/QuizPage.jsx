@@ -1,18 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowLeft, ArrowRight, Check, CheckCircle2, ChevronRight, Grid2X2, X,
-  IdCard, Lightbulb, Mail, MessageCircle, UsersRound, Utensils,
+  ArrowLeft, ArrowRight, BookOpen, Check, CheckCircle2, ChevronRight, Grid2X2, X,
+  IdCard, Lightbulb, Mail, MessageCircle, Phone, UsersRound, Utensils,
 } from 'lucide-react';
 import quizQuestions from '../data/quizQuestions.js';
 import Header from '../components/Header.jsx';
 
 const topics = [
-  { icon: MessageCircle, title: <>Chào hỏi &amp;<br />Giao tiếp</>, studyTopic: 'Chào hỏi và giao tiếp', tone: 'pink' },
-  { icon: IdCard, title: <>Danh thiếp</>, studyTopic: 'Danh thiếp', tone: 'blue' },
-  { icon: Mail, title: <>Email<br />công việc</>, studyTopic: 'Email và công việc', tone: 'yellow' },
-  { icon: UsersRound, title: <>Trong<br />cuộc họp</>, studyTopic: 'Trong cuộc họp', tone: 'green' },
-  { icon: Utensils, title: <>Quy tắc<br />bàn ăn</>, studyTopic: 'Quy tắc bàn ăn', tone: 'purple' },
+  { icon: BookOpen, title: <>Quy tắc<br />trong &amp; ngoài công ty</>, studyTopic: 'Quy tắc (trong và ngoài công ty)', tone: 'pink' },
+  { icon: Phone, title: <>Nghe<br />điện thoại</>, studyTopic: 'Nghe điện thoại', tone: 'blue' },
+  { icon: Mail, title: <>Mail</>, studyTopic: 'Mail', tone: 'yellow' },
 ];
 
 const quizStyles = `

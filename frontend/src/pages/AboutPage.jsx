@@ -230,7 +230,10 @@ const styles = `
   .about-step.blue .about-step-num { background: #48a5f5; }
   .about-step.yellow .about-step-num { background: #ffb321; }
   .about-step.green .about-step-num { background: #4fbd91; }
-  .about-step-mascot { width: 79px; height: 73px; position: absolute; z-index: 2; right: 8px; bottom: 0; object-fit: contain; }
+  .about-step-card-stack { width: 145px; height: 88px; position: relative; z-index: 1; object-fit: contain; }
+  .about-step-laptop { width: 145px; height: 88px; position: relative; z-index: 1; object-fit: contain; }
+  .about-step-checklist { width: 145px; height: 88px; position: relative; z-index: 1; object-fit: contain; }
+  .about-step-analyst { width: 145px; height: 88px; position: relative; z-index: 1; object-fit: contain; }
   .about-step h3 { margin: 7px 0 2px; font: 900 15px/1.25 Nunito, 'Be Vietnam Pro', sans-serif; }
   .about-step p { max-width: 230px; margin: 0; color: #58719a; font-size: 12px; line-height: 1.55; }
   @media (min-width: 1400px) {
@@ -278,7 +281,10 @@ const styles = `
     .about-step.pink .about-step-icon { width: 85px; height: 51px; }
     .about-step.green .about-step-icon { width: 68px; height: 58px; }
     .about-step-num { width: 27px; height: 27px; top: 25px; left: -7px; font-size: 11px; }
-    .about-step-mascot { width: 62px; height: 59px; right: 2px; }
+    .about-step-card-stack { width: 122px; height: 78px; }
+    .about-step-laptop { width: 122px; height: 78px; }
+    .about-step-checklist { width: 122px; height: 78px; }
+    .about-step-analyst { width: 122px; height: 78px; }
     .about-step h3 { margin-top: 6px; font-size: 13px; }
     .about-step p { font-size: 10px; }
   }
@@ -294,9 +300,15 @@ const styles = `
 function StepIllustration({ icon: Icon, tone, index }) {
   return (
     <div className={`about-step-illustration ${tone}`}>
-      <span className="about-step-icon"><Icon size={index === 1 ? 38 : 34} strokeWidth={2.4} /></span>
-      {index === 3 && <img className="about-step-mascot" src="/mannersgo/frog-good.png" alt="" />}
-      {index === 0 && <img className="about-step-mascot" src="/mannersgo/frog-good.png" alt="" />}
+      {index === 0
+        ? <img className="about-step-card-stack" src="/mannersgo/Kawaii%20Frog%20Card%20Stack%20Sticker.png" alt="Chồng thẻ học MannersGo có hình ếch" />
+        : index === 1
+          ? <img className="about-step-laptop" src="/mannersgo/Cute%20Laptop%20Video%20Sticker.png" alt="Minh họa tình huống thực tế trên máy tính" />
+          : index === 2
+            ? <img className="about-step-checklist" src="/mannersgo/Cute%20Checklist%20and%20Pencil%20Sticker.png" alt="Minh họa bảng checklist và bút chì cho bài quiz" />
+            : index === 3
+              ? <img className="about-step-analyst" src="/mannersgo/Chibi%20Frog%20Business%20Analyst%20Sticker.png" alt="Ếch MannersGo làm chuyên viên phân tích kinh doanh" />
+              : <span className="about-step-icon"><Icon size={34} strokeWidth={2.4} /></span>}
     </div>
   );
 }

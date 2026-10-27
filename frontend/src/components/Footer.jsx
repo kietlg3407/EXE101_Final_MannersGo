@@ -4,13 +4,13 @@ const contacts = [
   {
     label: 'Fanpage',
     value: 'MannersGo',
-    href: 'https://facebook.com/tenfanpage',
+    href: 'https://www.facebook.com/profile.php?id=61595585517756&mibextid=wwXIfr&rdid=Dcl2W26RFXvqFEaJ&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1DgouPHSpk%2F%3Fmibextid%3DwwXIfr#',
     Icon: Facebook,
   },
   {
     label: 'Điện thoại',
-    value: '0123456789',
-    href: 'tel:0123456789',
+    value: '0829367818',
+    href: 'tel:0829367818',
     Icon: Phone,
   },
   {

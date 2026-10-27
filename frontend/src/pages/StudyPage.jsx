@@ -2,17 +2,15 @@ import { useState } from 'react';
 import {
   ArrowLeft, ArrowRight, BookOpen, Check, ChevronRight, Circle, Heart,
   Lightbulb, ListChecks, RotateCw, Search, Shuffle, Volume2,
-  ChartNoAxesColumnIncreasing, IdCard, Puzzle, MessageCircle, Mail, UsersRound, Utensils,
+  ChartNoAxesColumnIncreasing, IdCard, Puzzle, MessageCircle, Mail, Phone, UsersRound, Utensils,
 } from 'lucide-react';
 import Header from '../components/Header';
 import flashcards from '../data/flashcards';
 
 const topics = [
-  { name: 'Chào hỏi và giao tiếp', icon: MessageCircle, description: 'Lời chào, cách xưng hô và giao tiếp lịch sự nơi công sở.' },
-  { name: 'Danh thiếp', icon: IdCard, description: 'Cách trao, nhận và sắp xếp danh thiếp đúng phép lịch sự.' },
-  { name: 'Email và công việc', icon: Mail, description: 'Email công việc và những nguyên tắc phối hợp hằng ngày.' },
-  { name: 'Trong cuộc họp', icon: UsersRound, description: 'Ứng xử, báo cáo và trao đổi hiệu quả trong cuộc họp.' },
-  { name: 'Quy tắc bàn ăn', icon: Utensils, description: 'Phép lịch sự khi dùng bữa và dự tiệc cùng đồng nghiệp.' },
+  { name: 'Quy tắc (trong và ngoài công ty)', icon: BookOpen, description: 'Quy tắc ứng xử với cấp trên, đồng nghiệp và khách hàng.' },
+  { name: 'Nghe điện thoại', icon: Phone, description: 'Cách tiếp nhận cuộc gọi và xử lý tình huống qua điện thoại.' },
+  { name: 'Mail', icon: Mail, description: 'Cách viết và trao đổi qua thư điện tử trong công việc.' },
 ];
 
 const getTopicCardCount = (topicName) => flashcards.filter((card) => card.category === topicName).length;

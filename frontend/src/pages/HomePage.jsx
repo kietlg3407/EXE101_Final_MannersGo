@@ -1,12 +1,10 @@
-import { ArrowRight, BookOpen, ChevronDown, IdCard, Lightbulb, Mail, Utensils, UsersRound } from 'lucide-react';
+import { ArrowRight, BookOpen, ChevronDown, Lightbulb, Mail, Phone, PhoneCall, UsersRound } from 'lucide-react';
 import Header from '../components/Header.jsx';
 
 const topics = [
-  { icon: BookOpen, title: <>Chào hỏi &amp;<br />Giao tiếp</>, studyTopic: 'Chào hỏi và giao tiếp', tone: 'pink', art: 'frog' },
-  { icon: IdCard, title: <>Danh thiếp</>, studyTopic: 'Danh thiếp', tone: 'blue', art: 'business-card' },
-  { icon: Mail, title: <>Email<br />công việc</>, studyTopic: 'Email và công việc', tone: 'yellow', art: 'laptop' },
-  { icon: UsersRound, title: <>Trong<br />cuộc họp</>, studyTopic: 'Trong cuộc họp', tone: 'green', art: 'meeting' },
-  { icon: Utensils, title: <>Quy tắc<br />bàn ăn</>, studyTopic: 'Quy tắc bàn ăn', tone: 'purple', art: 'bento' },
+  { icon: BookOpen, title: <>Quy tắc<br />trong &amp; ngoài công ty</>, studyTopic: 'Quy tắc (trong và ngoài công ty)', tone: 'pink', art: 'frog' },
+  { icon: Phone, title: <>Nghe<br />điện thoại</>, studyTopic: 'Nghe điện thoại', tone: 'blue', art: 'phone' },
+  { icon: Mail, title: <>Mail</>, studyTopic: 'Mail', tone: 'yellow', art: 'mail' },
 ];
 
 const benefits = [
@@ -124,7 +122,7 @@ const styles = `
     object-fit: cover;
     object-position: center;
   }
-  .mg-benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .mg-benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 20px; }
   .mg-benefit {
     min-height: 118px;
     display: flex;
@@ -155,6 +153,7 @@ const styles = `
   }
   .mg-benefit p { margin: 0; color: #3d5a8c; font-size: 12px; line-height: 1.55; }
   .mg-topics {
+    margin-top: 16px;
     padding: 16px 24px 17px;
     border-radius: 22px;
     background: #eef7ff;
@@ -198,16 +197,11 @@ const styles = `
   .mg-topic.green .mg-topic-icon { background: var(--mg-green); }
   .mg-topic.purple .mg-topic-icon { background: #a265ef; }
   .mg-topic-title { align-self: end; padding-bottom: 5px; color: var(--mg-navy); font-size: 12px; font-weight: 700; line-height: 1.35; }
-  .mg-topic-art { height: 50px; position: absolute; right: 8px; bottom: 21px; left: 48px; display: flex; align-items: center; justify-content: flex-end; }
+  .mg-topic-art { width: 82px; height: 58px; position: absolute; top: 5px; right: 27px; display: flex; align-items: center; justify-content: flex-end; }
   .mg-topic-art img { width: 80px; height: 62px; object-fit: contain; }
-  .mg-topic-art .mini-frog { width: 81px; height: 64px; background: url('/mannersgo/frog-good.png') no-repeat center 28% / contain; }
-  .mg-topic-art .mini-business-card { width: 75px; height: 39px; position: relative; border: 2px solid #455d78; border-radius: 5px; background: white; transform: rotate(-11deg); }
-  .mg-topic-art .mini-business-card::before { content: '◉'; position: absolute; top: 7px; left: 7px; color: #4c9fe8; font-size: 11px; }
-  .mg-topic-art .mini-business-card::after { content: ''; width: 29px; height: 3px; position: absolute; top: 11px; right: 7px; background: #a5bdd7; box-shadow: 0 8px #d0dcea, 0 16px #d0dcea; }
-  .mg-topic-art .mini-laptop { width: 74px; height: 46px; position: relative; border: 3px solid #314765; border-radius: 5px 5px 3px 3px; background: linear-gradient(135deg, #ddecfb, #fff); transform: rotate(-9deg); }
-  .mg-topic-art .mini-laptop::after { content: ''; height: 6px; position: absolute; right: -8px; bottom: -9px; left: -8px; border: 2px solid #314765; border-radius: 2px 2px 7px 7px; background: #b8d2ed; }
-  .mg-topic-art .mini-meeting { font-size: 35px; filter: drop-shadow(0 2px 2px #20395b25); }
-  .mg-topic-art .mini-bento { width: 67px; height: 42px; display: grid; place-items: center; border: 4px solid #28364c; border-radius: 8px; background: linear-gradient(90deg, #fff 0 48%, #80bd63 48% 70%, #ffb14c 70%); font-size: 23px; transform: rotate(-10deg); }
+  .mg-topic-art .mini-frog { width: 70px; height: 54px; }
+  .mg-topic-art .mini-phone { color: #318fe0; filter: drop-shadow(0 3px 2px #318fe033); }
+  .mg-topic-art .mini-mail { color: #e9a21b; filter: drop-shadow(0 3px 2px #e9a21b33); }
   .mg-topic-arrow { width: 24px; height: 24px; position: absolute; right: 8px; bottom: 7px; display: grid; place-items: center; border-radius: 50%; background: #ffe2e9; color: var(--mg-pink); }
   .mg-topic.blue .mg-topic-arrow { background: #d9eeff; color: var(--mg-blue); }
   .mg-topic.yellow .mg-topic-arrow { background: #ffedc7; color: #e9a21b; }
@@ -234,7 +228,7 @@ const styles = `
     .mg-topic { grid-template-columns: 36px 1fr; padding-inline: 7px; }
     .mg-topic-icon { width: 36px; height: 36px; }
     .mg-topic-title { font-size: 10px; }
-    .mg-topic-art { left: 40px; }
+    .mg-topic-art { left: auto; }
   }
   @media (max-width: 720px) {
     .mg-main { width: calc(100% - 28px); }
@@ -247,27 +241,25 @@ const styles = `
     .mg-cta { min-width: 0; height: 40px; padding-inline: 14px; font-size: 10px; }
     .mg-cta.secondary { min-width: 0; }
     .mg-hero-art { min-height: 235px; margin: 0 9px 9px; border-radius: 13px; }
-    .mg-benefits { grid-template-columns: 1fr; gap: 7px; }
+    .mg-benefits { grid-template-columns: 1fr; gap: 7px; margin-top: 14px; }
     .mg-benefit { min-height: 76px; gap: 12px; padding: 10px 13px; border-radius: 13px; }
     .mg-benefit-icon { width: 45px; height: 45px; flex-basis: 45px; }
     .mg-benefit-icon svg { width: 22px; }
     .mg-benefit h2 { margin-bottom: 2px; font-size: 12px; }
     .mg-benefit p { font-size: 9px; }
-    .mg-topics { padding: 14px 11px; border-radius: 16px; }
+    .mg-topics { margin-top: 12px; padding: 14px 11px; border-radius: 16px; }
     .mg-topics-heading { margin-bottom: 8px; }
     .mg-topics-heading h2 { font-size: 17px; }
     .mg-topics-heading a { gap: 3px; font-size: 9px; }
     .mg-topic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
-    .mg-topic { min-height: 78px; grid-template-columns: 32px 1fr; gap: 5px; padding: 7px; border-radius: 12px; }
+    .mg-topic { min-height: 92px; grid-template-columns: 32px 1fr; gap: 5px; padding: 7px; border-radius: 12px; }
     .mg-topic-icon { width: 32px; height: 32px; }
     .mg-topic-icon svg { width: 17px; }
     .mg-topic-title { font-size: 8px; }
-    .mg-topic-art { height: 34px; right: 5px; bottom: 17px; left: 37px; }
-    .mg-topic-art .mini-frog { width: 53px; height: 43px; }
-    .mg-topic-art .mini-business-card { width: 48px; height: 29px; }
-    .mg-topic-art .mini-laptop { width: 48px; height: 30px; }
-    .mg-topic-art .mini-meeting { font-size: 24px; }
-    .mg-topic-art .mini-bento { width: 45px; height: 30px; font-size: 17px; }
+    .mg-topic-art { width: 55px; height: 38px; top: 3px; right: 23px; }
+    .mg-topic-art .mini-frog { width: 53px; height: 39px; }
+    .mg-topic-art .mini-phone { width: 35px; height: 35px; }
+    .mg-topic-art .mini-mail { width: 39px; height: 39px; }
     .mg-topic-arrow { width: 20px; height: 20px; right: 5px; bottom: 4px; }
     .mg-bottom-space { height: 16px; }
   }
@@ -292,11 +284,9 @@ function HeroArtwork() {
 }
 
 function TopicIllustration({ kind }) {
-  if (kind === 'frog') return <span className="mini-frog" />;
-  if (kind === 'business-card') return <span className="mini-business-card" />;
-  if (kind === 'laptop') return <span className="mini-laptop" />;
-  if (kind === 'meeting') return <span className="mini-meeting">👥</span>;
-  return <span className="mini-bento">🍱</span>;
+  if (kind === 'frog') return <img className="mini-frog" src="/mannersgo/Cheerful%20Frog%20in%20a%20Suit.png" alt="" />;
+  if (kind === 'phone') return <PhoneCall className="mini-phone" size={45} strokeWidth={2.2} aria-hidden="true" />;
+  return <Mail className="mini-mail" size={50} strokeWidth={2.1} aria-hidden="true" />;
 }
 
 export default function HomePage() {

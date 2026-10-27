@@ -75,28 +75,29 @@ export default function ExplanationPage() {
       <main className="explanation-shell">
         <Link className="explanation-back" to="/quiz"><ArrowLeft size={16} /> Quay lại quiz</Link>
         <section className="explanation-hero">
-          <span className="explanation-eyebrow"><BookOpen size={16} /> Lời giải chi tiết · 詳しい解説</span>
+          <span className="explanation-eyebrow"><BookOpen size={16} /> Lời giải chi tiết</span>
           <h1>{detail.title}</h1>
-          <p className="explanation-question">{question.question}</p>
+          <p className="explanation-question">
+            {question.question.match(/ \((.*)\)$/)?.[1]?.replace(/\)$/, '') || question.question}
+          </p>
         </section>
 
         <div className="explanation-content">
           <section className="explanation-section">
-            <h2><CheckCircle2 size={20} /> Đáp án đúng · 正解</h2>
+            <h2><CheckCircle2 size={20} /> Câu gợi ý</h2>
             <div className="explanation-phrase">
               <strong>{detail.phrase}</strong>
-              {detail.romanization && <span>{detail.romanization}</span>}
               <p>{detail.phraseTranslation}</p>
             </div>
           </section>
 
           <section className="explanation-section">
-            <h2><Lightbulb size={20} /> Điểm cần nhớ · ポイント</h2>
+            <h2><Lightbulb size={20} /> Điểm cần nhớ</h2>
             <p>{detail.point}</p>
           </section>
 
           <section className="explanation-section">
-            <h2><BookOpen size={20} /> Phân tích từng lựa chọn · 選択肢の解説</h2>
+            <h2><BookOpen size={20} /> Phân tích từng lựa chọn</h2>
             <div className="explanation-answer">
               {detail.answerAnalysis.map(({ option, result, detail: analysis }) => (
                 <article className={`explanation-answer-item${option === detail.correctAnswer ? ' correct' : ''}`} key={option}>
@@ -111,22 +112,22 @@ export default function ExplanationPage() {
           </section>
 
           <section className="explanation-section">
-            <h2>Quy tắc ứng xử · 基本ルール</h2>
+            <h2>Quy tắc ứng xử</h2>
             <ul className="explanation-list">{detail.rules.map((item) => <li key={item}>{item}</li>)}</ul>
           </section>
 
           <section className="explanation-section">
-            <h2>Lỗi thường gặp · よくある間違い</h2>
+            <h2>Lỗi thường gặp</h2>
             <ul className="explanation-list">{detail.commonMistakes.map((item) => <li key={item}>{item}</li>)}</ul>
           </section>
 
           <section className="explanation-section">
-            <h2>Mở rộng thực tế · 実践のヒント</h2>
+            <h2>Mở rộng thực tế</h2>
             <p>{detail.practicalTip}</p>
           </section>
 
           <section className="explanation-section">
-            <h2>Nguồn tham khảo · 参考資料</h2>
+            <h2>Nguồn tham khảo</h2>
             <p className="explanation-source">{detail.source}</p>
           </section>
         </div>
