@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft, ArrowRight, BookOpen, Check, CheckCircle2, ChevronRight, Grid2X2, X,
@@ -12,6 +12,40 @@ const topics = [
   { icon: Phone, title: <>Nghe<br />điện thoại</>, studyTopic: 'Nghe điện thoại', tone: 'blue' },
   { icon: Mail, title: <>Mail</>, studyTopic: 'Mail', tone: 'yellow' },
 ];
+
+const quizProgressKey = 'mannersgo-quiz-progress';
+
+function readQuizProgress() {
+  const savedProgress = sessionStorage.getItem(quizProgressKey);
+  if (!savedProgress) return { currentIndex: 0, answers: {} };
+
+  try {
+    const progress = JSON.parse(savedProgress);
+    if (
+      Number.isInteger(progress.currentIndex)
+      && progress.currentIndex >= 0
+      && progress.currentIndex < quizQuestions.length
+      && progress.answers
+      && typeof progress.answers === 'object'
+      && !Array.isArray(progress.answers)
+      && Object.entries(progress.answers).every(([questionIndex, answerIndex]) => {
+        const index = Number(questionIndex);
+        return Number.isInteger(index)
+          && index >= 0
+          && index < quizQuestions.length
+          && Number.isInteger(answerIndex)
+          && answerIndex >= 0
+          && answerIndex < quizQuestions[index].answers.length;
+      })
+    ) {
+      return progress;
+    }
+  } catch (error) {
+    console.error('Unable to restore saved quiz progress.', error);
+  }
+
+  return { currentIndex: 0, answers: {} };
+}
 
 const quizStyles = `
   .mg-quiz { --quiz-navy: #102c68; --quiz-pink: #ff3e75; --quiz-blue: #4ba8f5; --quiz-green: #4fbd91; min-height: 100vh; padding: 0 0 26px; color: var(--quiz-navy); background: #eff9ff; font-family: 'Be Vietnam Pro', Arial, sans-serif; }
@@ -33,6 +67,8 @@ const quizStyles = `
   .quiz-answer-list { display: grid; gap: 9px; }
   .quiz-answer { min-height: 46px; display: flex; align-items: center; gap: 11px; padding: 5px 10px; border: 1px solid #d8e8f9; border-radius: 13px; background: white; color: #223f70; text-align: left; font-size: 12px; line-height: 1.4; cursor: pointer; transition: border-color .15s, background .15s, transform .15s; }
   .quiz-answer:hover { border-color: #86c3ff; transform: translateY(-1px); }
+  .quiz-answer:disabled { cursor: default; }
+  .quiz-answer:disabled:hover { transform: none; }
   .quiz-answer-letter { width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center; border-radius: 50%; background: var(--quiz-blue); color: white; font-size: 16px; font-weight: 800; }
   .quiz-answer.selected { border-color: var(--quiz-pink); background: #ffe7ed; }
   .quiz-answer.selected .quiz-answer-letter { background: var(--quiz-pink); }
@@ -61,10 +97,13 @@ const quizStyles = `
   .quiz-progress-count { position: absolute; top: 55px; right: 18px; font-size: 13px; font-weight: 700; }
   .quiz-question-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 8px; margin-top: 19px; }
   .quiz-question-grid button { aspect-ratio: 1; position: relative; display: grid; place-items: center; border: 1px solid #e1ebf8; border-radius: 12px; background: #fff; color: #526c96; font-size: 14px; cursor: pointer; }
-  .quiz-question-grid button.current { border-color: var(--quiz-pink); background: var(--quiz-pink); color: #fff; font-weight: 700; }
-  .quiz-question-grid button.answered { border-color: #d8f0e4; background: #e7f7ef; color: #318b69; }
-  .quiz-question-grid button.answered.current { border-color: var(--quiz-pink); background: var(--quiz-pink); color: #fff; }
+  .quiz-question-grid button.current:not(.answered) { border-color: var(--quiz-pink); background: var(--quiz-pink); color: #fff; font-weight: 700; }
+  .quiz-question-grid button.answered.correct { border-color: #d8f0e4; background: #e7f7ef; color: #318b69; }
+  .quiz-question-grid button.answered.incorrect { border-color: #f3cbd0; background: #fff0f1; color: #c53945; }
+  .quiz-question-grid button.answered.current { box-shadow: 0 0 0 2px #ff3e7540; font-weight: 700; }
   .quiz-grid-check { position: absolute; top: 5px; right: 5px; }
+  .quiz-grid-check.correct { color: #218157; }
+  .quiz-grid-check.incorrect { color: #d3424f; }
   .quiz-tip-panel { min-height: 258px; position: relative; overflow: hidden; padding: 18px 15px 0; border-radius: 21px; background: linear-gradient(145deg, #fff0f4, #fff8f8); }
   .quiz-tip-heading { display: flex; align-items: center; gap: 9px; color: var(--quiz-pink); font: 900 15px Nunito, 'Be Vietnam Pro', sans-serif; white-space: nowrap; }
   .quiz-tip-bulb { width: 45px; height: 45px; flex: 0 0 45px; display: grid; place-items: center; border-radius: 50%; background: #ffe1e9; color: var(--quiz-pink); }
@@ -252,8 +291,9 @@ function QuizTopicStrip() {
 }
 
 export default function QuizPage() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [savedProgress] = useState(readQuizProgress);
+  const [currentIndex, setCurrentIndex] = useState(savedProgress.currentIndex);
+  const [answers, setAnswers] = useState(savedProgress.answers);
   const [finished, setFinished] = useState(false);
   const questions = quizQuestions;
   const current = questions[currentIndex];
@@ -263,7 +303,12 @@ export default function QuizPage() {
     total + (questions[Number(index)].correct === selected ? 1 : 0)
   ), 0);
 
+  useEffect(() => {
+    sessionStorage.setItem(quizProgressKey, JSON.stringify({ currentIndex, answers }));
+  }, [currentIndex, answers]);
+
   function chooseAnswer(answerIndex) {
+    if (answers[currentIndex] !== undefined) return;
     setAnswers((saved) => ({ ...saved, [currentIndex]: answerIndex }));
   }
   function goToQuestion(index) {
@@ -317,6 +362,7 @@ export default function QuizPage() {
                             type="button"
                             key={answer}
                             aria-pressed={selected}
+                            disabled={answers[currentIndex] !== undefined}
                             onClick={() => chooseAnswer(index)}
                           >
                             <span className="quiz-answer-letter">{String.fromCharCode(65 + index)}</span>
@@ -366,12 +412,19 @@ export default function QuizPage() {
               <div className="quiz-progress-bar"><span style={{ width: `${progress}%` }} /></div>
               <strong className="quiz-progress-count">{answeredCount}/{questions.length}</strong>
               <div className="quiz-question-grid">
-                {questions.map((_, index) => (
-                  <button className={`${index === currentIndex ? 'current' : ''}${answers[index] !== undefined ? ' answered' : ''}`} type="button" key={index} aria-label={`Đi đến câu ${index + 1}`} aria-current={index === currentIndex ? 'step' : undefined} onClick={() => goToQuestion(index)}>
-                    {answers[index] !== undefined && index !== currentIndex ? <Check className="quiz-grid-check" size={15} strokeWidth={3} /> : null}
+                {questions.map((question, index) => {
+                  const answered = answers[index] !== undefined;
+                  const correct = answered && answers[index] === question.correct;
+                  const answerStatus = correct ? 'correct' : 'incorrect';
+                  return (
+                  <button className={`${index === currentIndex ? 'current' : ''}${answered ? ` answered ${answerStatus}` : ''}`} type="button" key={index} aria-label={`Đi đến câu ${index + 1}${answered ? correct ? ', trả lời đúng' : ', trả lời sai' : ''}`} aria-current={index === currentIndex ? 'step' : undefined} onClick={() => goToQuestion(index)}>
+                    {answered && (correct
+                      ? <Check className="quiz-grid-check correct" size={15} strokeWidth={3} />
+                      : <X className="quiz-grid-check incorrect" size={15} strokeWidth={3} />)}
                     {index + 1}
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </section>
             <section className="quiz-tip-panel">
