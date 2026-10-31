@@ -47,6 +47,20 @@ function readQuizProgress() {
   return { currentIndex: 0, answers: {} };
 }
 
+function splitBilingualText(text) {
+  if (!text) return { ja: '', vi: '' };
+  const trimmed = text.trim();
+  const match = trimmed.match(/^(.*?)\s*[(（]([A-Za-zÀ-ỹĐđ"“'‘][\s\S]*)[)）]\s*$/);
+  if (match) {
+    return { ja: match[1].trim(), vi: `(${match[2].trim()})` };
+  }
+  return { ja: trimmed, vi: '' };
+}
+
+const questionVideos = {
+  'elevator-seat': encodeURI('/clipAI/Thang máy.mp4'),
+};
+
 const quizStyles = `
   .mg-quiz { --quiz-navy: #102c68; --quiz-pink: #ff3e75; --quiz-blue: #4ba8f5; --quiz-green: #4fbd91; min-height: 100vh; padding: 0 0 26px; color: var(--quiz-navy); background: #eff9ff; font-family: 'Be Vietnam Pro', Arial, sans-serif; }
   .mg-quiz *, .mg-quiz *::before, .mg-quiz *::after { box-sizing: border-box; }
@@ -59,17 +73,23 @@ const quizStyles = `
   .quiz-count-label, .quiz-category-label { min-height: 34px; display: inline-flex; align-items: center; gap: 8px; padding: 0 17px; border-radius: 20px; background: #cfe7ff; color: #16427d; font-size: 12px; font-weight: 700; }
   .quiz-label-divider { width: 1px; height: 27px; background: #dbe8f4; }
   .quiz-category-label { padding-inline: 15px; background: #ffe8ef; color: #f73870; font-size: 13px; }
-  .quiz-question-prompt { margin: 0 0 18px; color: #102d68; font: 900 clamp(18px, 1.8vw, 22px)/1.3 Nunito, 'Be Vietnam Pro', sans-serif; letter-spacing: -.35px; }
+  .quiz-question-prompt { margin: 0 0 18px; color: #102d68; font-family: Nunito, 'Be Vietnam Pro', sans-serif; letter-spacing: -.35px; }
+  .quiz-prompt-ja { display: block; font-weight: 800; font-size: clamp(17px, 1.7vw, 21px); line-height: 1.35; color: #102d68; }
+  .quiz-prompt-vi { display: block; margin-top: 6px; font-weight: 400; font-size: clamp(13px, 1.2vw, 15px); color: #587199; line-height: 1.45; letter-spacing: 0; }
   .quiz-question-content { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); align-items: start; gap: 23px; }
-  .quiz-scene { width: 100%; height: clamp(270px, 34vw, 385px); overflow: hidden; border-radius: 17px; background: #d9edff; }
+  .quiz-scene { width: 100%; height: clamp(270px, 34vw, 385px); overflow: hidden; border-radius: 17px; background: #0f172a; position: relative; }
   .quiz-scene svg { width: 100%; height: 100%; display: block; }
+  .quiz-video { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }
   .quiz-answer-panel { min-width: 0; }
   .quiz-answer-list { display: grid; gap: 9px; }
-  .quiz-answer { min-height: 46px; display: flex; align-items: center; gap: 11px; padding: 5px 10px; border: 1px solid #d8e8f9; border-radius: 13px; background: white; color: #223f70; text-align: left; font-size: 12px; line-height: 1.4; cursor: pointer; transition: border-color .15s, background .15s, transform .15s; }
+  .quiz-answer { min-height: 48px; display: flex; align-items: center; gap: 11px; padding: 7px 11px; border: 1px solid #d8e8f9; border-radius: 13px; background: white; color: #223f70; text-align: left; cursor: pointer; transition: border-color .15s, background .15s, transform .15s; }
   .quiz-answer:hover { border-color: #86c3ff; transform: translateY(-1px); }
   .quiz-answer:disabled { cursor: default; }
   .quiz-answer:disabled:hover { transform: none; }
   .quiz-answer-letter { width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center; border-radius: 50%; background: var(--quiz-blue); color: white; font-size: 16px; font-weight: 800; }
+  .quiz-answer-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .quiz-answer-ja { display: block; font-size: 12.5px; font-weight: 600; color: #19386d; line-height: 1.35; }
+  .quiz-answer-vi { display: block; font-size: 11px; font-weight: 400; color: #5c749b; line-height: 1.35; }
   .quiz-answer.selected { border-color: var(--quiz-pink); background: #ffe7ed; }
   .quiz-answer.selected .quiz-answer-letter { background: var(--quiz-pink); }
   .quiz-answer.wrong { border-color: #ff758d; background: #fff0f2; }
@@ -83,6 +103,8 @@ const quizStyles = `
   .quiz-answer-feedback.incorrect .quiz-feedback-title { color: #d34267; }
   .quiz-answer-feedback p { margin: 0; font-size: 11px; line-height: 1.6; white-space: pre-line; }
   .quiz-feedback-correct { margin-top: 6px !important; font-weight: 700; }
+  .quiz-feedback-vi { font-weight: 400; font-size: 11px; color: #49715e; }
+  .quiz-answer-feedback.incorrect .quiz-feedback-vi { color: #885567; }
   .quiz-explanation-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 9px; color: #ed3c70 !important; font-size: 11px; font-weight: 800; }
   .quiz-explanation-link:hover { text-decoration: underline !important; }
   .quiz-question-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 19px; }
@@ -108,6 +130,7 @@ const quizStyles = `
   .quiz-tip-heading { display: flex; align-items: center; gap: 9px; color: var(--quiz-pink); font: 900 15px Nunito, 'Be Vietnam Pro', sans-serif; white-space: nowrap; }
   .quiz-tip-bulb { width: 45px; height: 45px; flex: 0 0 45px; display: grid; place-items: center; border-radius: 50%; background: #ffe1e9; color: var(--quiz-pink); }
   .quiz-tip-speech { width: 83%; min-height: 89px; position: relative; z-index: 1; display: grid; place-items: center; margin: 13px auto 0; padding: 12px 19px; border: 1.5px solid #8ca9d3; border-radius: 50%; background: #fff; color: #284779; font-size: 11px; font-weight: 600; line-height: 1.55; text-align: center; transform: rotate(-5deg); }
+  .quiz-tip-vi { display: block; margin-top: 4px; font-weight: 400; font-size: 10px; color: #526c96; }
   .quiz-tip-speech::after { content: ''; width: 14px; height: 14px; position: absolute; right: 23px; bottom: -9px; border-right: 1.5px solid #8ca9d3; border-bottom: 1.5px solid #8ca9d3; background: white; transform: rotate(30deg) skew(10deg, 10deg); }
   .quiz-tip-mascot { width: 142px; height: 139px; position: absolute; right: 5px; bottom: -35px; object-fit: contain; filter: drop-shadow(0 5px 4px #23446b20); }
   .quiz-spark { position: absolute; z-index: 2; right: 24px; bottom: 93px; color: #ffbd29; font-size: 25px; transform: rotate(-15deg); }
@@ -160,11 +183,15 @@ const quizStyles = `
     .quiz-label-row { gap: 7px; margin-bottom: 10px; }
     .quiz-count-label, .quiz-category-label { min-height: 29px; gap: 5px; padding-inline: 10px; font-size: 10px; }
     .quiz-category-label { font-size: 10px; }
-    .quiz-question-prompt { margin-bottom: 10px; font-size: 17px; }
+    .quiz-question-prompt { margin-bottom: 10px; }
+    .quiz-prompt-ja { font-size: 15px; }
+    .quiz-prompt-vi { font-size: 12px; margin-top: 4px; }
     .quiz-question-content { grid-template-columns: minmax(0,1fr); gap: 12px; }
     .quiz-scene { height: clamp(190px, 56vw, 300px); border-radius: 12px; }
     .quiz-answer-list { gap: 7px; }
-    .quiz-answer { min-height: 42px; gap: 8px; padding: 4px 8px; border-radius: 11px; font-size: 10px; }
+    .quiz-answer { min-height: 42px; gap: 8px; padding: 5px 8px; border-radius: 11px; }
+    .quiz-answer-ja { font-size: 11px; }
+    .quiz-answer-vi { font-size: 9.5px; }
     .quiz-answer-letter { width: 32px; height: 32px; flex-basis: 32px; font-size: 14px; }
     .quiz-question-actions { margin-top: 12px; }
     .quiz-action { min-height: 39px; padding-inline: 11px; font-size: 10px; }
@@ -297,6 +324,7 @@ export default function QuizPage() {
   const [finished, setFinished] = useState(false);
   const questions = quizQuestions;
   const current = questions[currentIndex];
+  const videoSrc = current?.video || questionVideos[current?.explanationId];
   const answeredCount = Object.keys(answers).length;
   const progress = Math.round((answeredCount / questions.length) * 100);
   const score = Object.entries(answers).reduce((total, [index, selected]) => (
@@ -346,9 +374,34 @@ export default function QuizPage() {
                   <span className="quiz-label-divider" />
                   <span className="quiz-category-label"><Grid2X2 size={17} fill="currentColor" /> {current.category}</span>
                 </div>
-                <h1 className="quiz-question-prompt">{current.question}</h1>
+                <h1 className="quiz-question-prompt">
+                  {(() => {
+                    const { ja, vi } = splitBilingualText(current.question);
+                    return (
+                      <>
+                        <span className="quiz-prompt-ja">{ja}</span>
+                        {vi && <span className="quiz-prompt-vi">{vi}</span>}
+                      </>
+                    );
+                  })()}
+                </h1>
                 <div className="quiz-question-content">
-                  <MeetingScene />
+                  {videoSrc ? (
+                    <div className="quiz-scene" aria-label="Video tình huống">
+                      <video
+                        key={videoSrc}
+                        src={videoSrc}
+                        className="quiz-video"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        controls
+                      />
+                    </div>
+                  ) : (
+                    <MeetingScene />
+                  )}
                   <section className="quiz-answer-panel">
                     <div className="quiz-answer-list">
                       {current.answers.map((answer, index) => {
@@ -356,6 +409,7 @@ export default function QuizPage() {
                         const isWrong = selected && index !== current.correct;
                         const showCorrect = answers[currentIndex] !== undefined && index === current.correct;
                         const selectedCorrectly = selected && index === current.correct;
+                        const { ja, vi } = splitBilingualText(answer);
                         return (
                           <button
                             className={`quiz-answer${selected ? ' selected' : ''}${isWrong ? ' wrong' : ''}${selectedCorrectly ? ' correct' : ''}`}
@@ -366,7 +420,10 @@ export default function QuizPage() {
                             onClick={() => chooseAnswer(index)}
                           >
                             <span className="quiz-answer-letter">{String.fromCharCode(65 + index)}</span>
-                            <span>{answer}</span>
+                            <span className="quiz-answer-text">
+                              <span className="quiz-answer-ja">{ja}</span>
+                              {vi && <span className="quiz-answer-vi">{vi}</span>}
+                            </span>
                             {showCorrect && (selectedCorrectly
                               ? <CheckCircle2 className="quiz-answer-result" size={18} />
                               : answers[currentIndex] !== current.correct && <Check className="quiz-answer-result" size={18} />)}
@@ -382,11 +439,15 @@ export default function QuizPage() {
                             : <><X size={17} /> Chưa chính xác</>}
                         </div>
                         <p>{current.explanation}</p>
-                        {answers[currentIndex] !== current.correct && (
-                          <p className="quiz-feedback-correct">
-                            Đáp án đúng: {String.fromCharCode(65 + current.correct)}. {current.answers[current.correct]}
-                          </p>
-                        )}
+                        {answers[currentIndex] !== current.correct && (() => {
+                          const { ja, vi } = splitBilingualText(current.answers[current.correct]);
+                          return (
+                            <p className="quiz-feedback-correct">
+                              Đáp án đúng: {String.fromCharCode(65 + current.correct)}. {ja}
+                              {vi && <span className="quiz-feedback-vi"> {vi}</span>}
+                            </p>
+                          );
+                        })()}
                         {current.explanationId && (
                           <Link className="quiz-explanation-link" to={`/explanations/${current.explanationId}`}>
                             Đi đến lời giải chi tiết <ChevronRight size={15} />
@@ -429,7 +490,17 @@ export default function QuizPage() {
             </section>
             <section className="quiz-tip-panel">
               <div className="quiz-tip-heading"><span className="quiz-tip-bulb"><Lightbulb size={25} fill="currentColor" /></span>Mẹo nhỏ từ MannersGo</div>
-              <p className="quiz-tip-speech">{current.hint}</p>
+              <p className="quiz-tip-speech">
+                {(() => {
+                  const { ja, vi } = splitBilingualText(current.hint);
+                  return (
+                    <>
+                      <span>{ja}</span>
+                      {vi && <span className="quiz-tip-vi">{vi}</span>}
+                    </>
+                  );
+                })()}
+              </p>
               <span className="quiz-spark" aria-hidden="true">✦</span>
               <img className="quiz-tip-mascot" src="/mannersgo/Ếch doanh nhân chỉ tay vui vẻ.png" alt="Ếch doanh nhân chỉ tay vui vẻ" />
             </section>
