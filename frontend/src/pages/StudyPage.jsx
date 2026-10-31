@@ -16,6 +16,16 @@ const topics = [
 const getTopicCardCount = (topicName) => flashcards.filter((card) => card.category === topicName).length;
 const emptyTopicMessage = 'Chủ đề này hiện chưa có thẻ học. Vui lòng chọn chủ đề khác.';
 
+function splitBilingualText(text) {
+  if (!text) return { ja: '', vi: '' };
+  const trimmed = text.trim();
+  const match = trimmed.match(/^(.*?)\s*[(（]([A-Za-zÀ-ỹĐđ"“'‘][\s\S]*)[)）]\s*$/);
+  if (match) {
+    return { ja: match[1].trim(), vi: `(${match[2].trim()})` };
+  }
+  return { ja: trimmed, vi: '' };
+}
+
 const studyStyles = `
   .mg-study {
     --study-navy: #102e68;
@@ -57,15 +67,17 @@ const studyStyles = `
   .study-progress-track span { height: 100%; display: block; border-radius: inherit; background: linear-gradient(90deg, #ff678d, #ff4778); transition: width .2s ease; }
   .study-card-panel { min-height: 344px; position: relative; padding: 22px 26px 12px; border: 1px solid #f0f1f3; border-radius: 19px; background: #fff; box-shadow: 0 6px 24px #19386b0b; }
   .study-card-counter { position: absolute; z-index: 3; top: 12px; left: 42px; padding: 8px 15px; border-radius: 22px; background: #ffe2e9; color: #fa376d; font-size: 12px; font-weight: 700; }
-  .study-card-stage { width: 100%; height: clamp(175px, 19vw, 218px); display: block; position: relative; overflow: hidden; padding: 0; border: 0; border-radius: 17px; background: #edf5ff; color: var(--study-navy); cursor: pointer; perspective: 1000px; appearance: none; }
+  .study-card-stage { width: 100%; height: clamp(185px, 20vw, 235px); display: block; position: relative; overflow: hidden; padding: 0; border: 0; border-radius: 17px; background: #edf5ff; color: var(--study-navy); cursor: pointer; perspective: 1000px; appearance: none; }
   .study-flip-inner { width: 100%; height: 100%; position: relative; display: block; transform-style: preserve-3d; transition: transform .55s cubic-bezier(.2,.7,.2,1); }
   .study-flip-stage.flipped .study-flip-inner { transform: rotateY(180deg); }
-  .study-flip-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; overflow: auto; padding: 24px 60px; border-radius: inherit; backface-visibility: hidden; -webkit-backface-visibility: hidden; text-align: center; }
+  .study-flip-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; overflow: auto; padding: 20px 48px; border-radius: inherit; backface-visibility: hidden; -webkit-backface-visibility: hidden; text-align: center; }
   .study-flip-front { background: radial-gradient(circle at top right, #fff2f6, transparent 42%), linear-gradient(135deg, #eef6ff, #fffafa); }
   .study-flip-back { background: radial-gradient(circle at bottom left, #edf8ff, transparent 45%), linear-gradient(135deg, #fff3f6, #f7f5ff); transform: rotateY(180deg); }
   .study-question-label, .study-answer-label { color: #f04473; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
-  .study-flip-text { max-width: 680px; color: #17376b; font-size: clamp(15px, 1.5vw, 19px); font-weight: 800; line-height: 1.55; }
-  .study-flip-hint { display: inline-flex; align-items: center; gap: 6px; margin-top: 3px; color: #7185a5; font-size: 10px; font-weight: 600; }
+  .study-flip-text { max-width: 680px; text-align: center; line-height: 1.45; }
+  .study-flip-ja { display: block; font-weight: 800; font-size: clamp(15px, 1.45vw, 18px); color: #102e68; line-height: 1.45; }
+  .study-flip-vi { display: block; margin-top: 6px; font-weight: 400; font-size: clamp(12.5px, 1.15vw, 14.5px); color: #587199; line-height: 1.45; }
+  .study-flip-hint { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; color: #7185a5; font-size: 10px; font-weight: 600; }
   .study-card-arrow { width: 38px; height: 38px; position: absolute; z-index: 4; top: 50%; display: grid; place-items: center; border: 1px solid #ff7d9d; border-radius: 50%; background: #fff6f8; color: #ff4779; cursor: pointer; transform: translateY(-50%); transition: background .16s, transform .16s; }
   .study-card-arrow:hover { background: #ffe7ed; transform: translateY(-50%) scale(1.06); }
   .study-card-arrow.prev { left: 7px; }
@@ -173,6 +185,8 @@ const studyStyles = `
     .study-card-arrow.prev { left: 5px; }
     .study-card-arrow.next { right: 5px; }
     .study-flip-text { font-size: 13px; }
+    .study-flip-ja { font-size: 13px; }
+    .study-flip-vi { font-size: 10.5px; margin-top: 4px; }
     .study-flip-hint { font-size: 9px; }
     .study-card-copy p { font-size: 10px; }
     .study-audio { min-height: 35px; font-size: 11px; }
@@ -256,7 +270,8 @@ export default function StudyPage() {
   const selectedTopicData = topics.find((topic) => topic.name === selectedTopic);
   const TopicIcon = selectedTopicData?.icon || IdCard;
   const current = topicCards[currentIndex];
-  const questionJapanese = current?.question.split(' (')[0];
+  const { ja: questionJapanese, vi: questionVietnamese } = splitBilingualText(current?.question);
+  const { ja: answerJapanese, vi: answerVietnamese } = splitBilingualText(current?.answer);
   const hasJapaneseQuestion = /[\u3040-\u30ff\u3400-\u9fff]/.test(questionJapanese || '');
   const learnedCardIndexes = learnedCardsByTopic[selectedTopic] || [];
   const learnedCount = learnedCardIndexes.length;
@@ -366,12 +381,18 @@ export default function StudyPage() {
                 <span className="study-flip-inner">
                   <span className="study-flip-face study-flip-front">
                     <span className="study-question-label">Câu hỏi {currentIndex + 1}</span>
-                    <span className="study-flip-text">{current.question}</span>
+                    <span className="study-flip-text">
+                      <span className="study-flip-ja">{questionJapanese || current.question}</span>
+                      {questionVietnamese && <span className="study-flip-vi">{questionVietnamese}</span>}
+                    </span>
                     <span className="study-flip-hint"><RotateCw size={15} /> Nhấn vào thẻ để lật xem đáp án</span>
                   </span>
                   <span className="study-flip-face study-flip-back">
                     <span className="study-answer-label">Đáp án đúng</span>
-                    <span className="study-flip-text">{current.answer}</span>
+                    <span className="study-flip-text">
+                      <span className="study-flip-ja">{answerJapanese || current.answer}</span>
+                      {answerVietnamese && <span className="study-flip-vi">{answerVietnamese}</span>}
+                    </span>
                   </span>
                 </span>
               </button>
@@ -382,8 +403,8 @@ export default function StudyPage() {
                     <Volume2 size={20} /> Phát âm câu hỏi tiếng Nhật <ChevronRight size={17} />
                   </button>
                 )}
-                {isCardFlipped && current.japanese && (
-                  <button className="study-audio" type="button" onClick={() => speakJapanese(current.japanese)}>
+                {isCardFlipped && (current.japanese || answerJapanese) && (
+                  <button className="study-audio" type="button" onClick={() => speakJapanese(current.japanese || answerJapanese)}>
                     <Volume2 size={20} /> Phát âm tiếng Nhật <ChevronRight size={17} />
                   </button>
                 )}
@@ -397,7 +418,16 @@ export default function StudyPage() {
                     <h3>Gợi ý</h3>
                     <img className="study-teacher-frog" src="/mannersgo/Ếch giáo viên đáng yêu cầm que chỉ dẫn.png" alt="Ếch giáo viên đáng yêu cầm que chỉ dẫn" />
                   </div>
-                  <p>{current.hint}</p>
+                  {(() => {
+                    const { ja, vi } = splitBilingualText(current.hint);
+                    if (!vi) return <p>{ja}</p>;
+                    return (
+                      <p>
+                        <span style={{ fontWeight: 600 }}>{ja}</span>
+                        <span style={{ display: 'block', marginTop: 3, color: '#56729a' }}>{vi}</span>
+                      </p>
+                    );
+                  })()}
                   <h3>Giải thích</h3>
                   <p>{current.explanation}</p>
                 </div>
