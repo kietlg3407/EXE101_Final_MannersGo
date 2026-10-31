@@ -17,3 +17,4 @@ const projectInterestSchema = new mongoose.Schema({
 projectInterestSchema.index({ user: 1, project: 1 }, { unique: true });
 
 export default mongoose.model('ProjectInterest', projectInterestSchema);
+

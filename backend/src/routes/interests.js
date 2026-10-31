@@ -72,3 +72,4 @@ router.post('/toggle', requireAllowedOrigin, requireSession, async (req, res, ne
 });
 
 export default router;
+
