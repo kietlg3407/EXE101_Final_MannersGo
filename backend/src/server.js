@@ -7,6 +7,7 @@ import contactRouter from './routes/contact.js';
 import scenarioRouter from './routes/scenarios.js';
 import questionRouter from './routes/questions.js';
 import authRouter from './routes/auth.js';
+import interestRouter from './routes/interests.js';
 
 const app = express();
 const port = Number(process.env.PORT) || 5000;
@@ -44,6 +45,7 @@ app.use('/api/contact', contactRouter);
 app.use('/api/scenarios', scenarioRouter);
 app.use('/api/questions', questionRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/interests', interestRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: `Không tìm thấy endpoint ${req.method} ${req.path}.` });

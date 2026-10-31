@@ -310,4 +310,12 @@ router.post('/logout', requireAllowedOrigin, (_req, res) => {
   return res.json({ message: 'Đã đăng xuất.' });
 });
 
+export {
+  requireSession,
+  readSessionToken,
+  verifyToken,
+  requireAllowedOrigin,
+  requireDatabase,
+};
+
 export default router;
